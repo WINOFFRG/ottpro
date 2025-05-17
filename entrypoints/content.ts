@@ -74,6 +74,7 @@ export default defineContentScript({
 					this,
 					method,
 					url,
+					// @ts-ignore
 					async,
 					username,
 					password,
