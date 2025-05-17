@@ -43,4 +43,7 @@ export default defineConfig({
 			sourcemap: true,
 		},
 	}),
+	zip: {
+		artifactTemplate: "{{name}}-{{browser}}-{{version}}.zip",
+	},
 });

@@ -4,6 +4,9 @@
 	"private": true,
 	"version": "0.0.0",
 	"type": "module",
+	"engines": {
+		"bun": ">=1.0.0"
+	},
 	"scripts": {
 		"dev": "wxt",
 		"dev:firefox": "wxt -b firefox",
@@ -12,10 +15,13 @@
 		"zip": "wxt zip",
 		"zip:firefox": "wxt zip -b firefox",
 		"compile": "tsc --noEmit",
-		"postinstall": "wxt prepare"
+		"changeset": "changeset",
+		"version": "changeset version",
+		"release": "changeset publish"
 	},
 	"devDependencies": {
 		"typescript": "^5.8.3",
-		"wxt": "^0.20.6"
+		"wxt": "^0.20.6",
+		"@changesets/cli": "^2.26.2"
 	}
 }
