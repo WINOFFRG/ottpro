@@ -1,0 +1,1926 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>HTML + CSS</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <style>
+      @font-face {
+        font-family: "Geist";
+        src: url(chrome-extension://kgaddahbbpflkifbmkhindpbafggbobh/media/font/Geist-Medium.ttf)
+          format("truetype");
+      }
+
+      .prod---modal {
+        opacity: 0;
+        position: fixed;
+        z-index: 9999999;
+        overflow: hidden;
+        right: calc(12px + 10000px);
+        top: 12px;
+        border-radius: 24px;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        width: 278px;
+        max-height: 646px;
+        height: calc(100vh - 24px);
+        transition: box-shadow 0.2s, opacity 0.2s, transform 0.2s, right 0s 0.2s;
+        overflow: hidden;
+        pointer-events: all;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        -webkit-transform: scale(0.95);
+        -ms-transform: scale(0.95);
+        transform: scale(0.95);
+        -ms-scroll-chaining: none;
+        overscroll-behavior: contain;
+        isolation: isolate;
+      }
+
+      .prod---modal.locked-in.warning * {
+        pointer-events: none;
+      }
+
+      .prod---modal::before {
+        content: "";
+        z-index: -1;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        -webkit-backdrop-filter: blur(0px);
+        backdrop-filter: blur(0px);
+        background: rgba(38, 38, 38, 0.95);
+      }
+
+      .prod---modal.active {
+        opacity: 1;
+        left: unset;
+        right: 12px;
+        -webkit-transform: scale(1);
+        -ms-transform: scale(1);
+        transform: scale(1);
+        transition: box-shadow 0.2s, opacity 0.2s, transform 0.2s, left 0s 0s,
+          -webkit-transform 0.2s;
+      }
+
+      .prod---modal.active::before {
+        -webkit-backdrop-filter: blur(40px);
+        backdrop-filter: blur(40px);
+      }
+
+      .prod---modal::after {
+        position: absolute;
+        z-index: 10;
+        content: "";
+        transition: 0.2s;
+        box-shadow: 0;
+        height: 100%;
+        width: 100%;
+        pointer-events: none;
+        user-select: none;
+      }
+
+      .prod---modal.locked-in::after {
+        box-shadow: 0px 0px 28px 0px #cdcdcd inset;
+      }
+
+      .prod---modal.locked-in.warning::after {
+        box-shadow: 0px 0px 28px 0px #e41d1d inset;
+      }
+
+      .prod---modal * {
+        margin: 0;
+        padding: 0;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        font-family: "Geist";
+        letter-spacing: 0.15px;
+        font-weight: 500;
+        -webkit-transition: 0.2s;
+        -o-transition: 0.2s;
+        transition: 0.2s;
+        text-decoration: none;
+        -webkit-font-smoothing: antialiased;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        -ms-scroll-chaining: none;
+        overscroll-behavior: contain;
+        text-transform: unset !important;
+      }
+
+      .prod---modal button {
+        border: none;
+        cursor: pointer;
+      }
+
+      .prod---modal button * {
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        pointer-events: none;
+      }
+
+      .prod---modal p {
+        font-weight: 400;
+      }
+
+      .prod---modal .section {
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 16px;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .prod---modal .header {
+        position: absolute;
+        width: 100%;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        height: 64px;
+        -webkit-box-pack: center;
+        -ms-flex-pack: center;
+        justify-content: space-between;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        padding: 16px;
+        z-index: 5;
+        background: rgba(47, 47, 47, 0.3);
+        -webkit-backdrop-filter: blur(20px);
+        backdrop-filter: blur(20px);
+      }
+
+      .prod---modal .header .version {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .prod---modal .header .version .text {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .prod---modal .header svg {
+        height: 32px;
+        width: 32px;
+      }
+
+      .prod---modal .header .text p {
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 14px;
+        letter-spacing: 0;
+        color: #fff;
+      }
+
+      .prod---modal .header .text span {
+        font-weight: 500;
+        font-size: 11px;
+        line-height: 11px;
+        letter-spacing: 0px;
+        color: rgba(255, 255, 255, 0.4);
+      }
+
+      .prod---modal .header .sub {
+        padding: 2px 8px;
+        color: #fff;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        font-size: 12px;
+        position: absolute;
+        left: 16px;
+        cursor: default;
+      }
+
+      .prod---modal .header .sub:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      .prod---modal .header .logo {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 18px;
+      }
+
+      .prod---modal .header .x {
+        right: 16px;
+        position: absolute;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 8px;
+        width: 32px;
+        height: 32px;
+      }
+
+      .prod---modal .x:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      .prod---modal .header .x svg {
+        height: 16px;
+        width: 16px;
+        margin: 0 auto;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        pointer-events: none;
+      }
+
+      .prod---modal .main {
+        padding-top: 64px;
+        overflow-y: auto;
+        padding-bottom: 65px;
+        -ms-scroll-chaining: none;
+        overscroll-behavior: contain;
+      }
+
+      .prod---modal .footer {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        background: rgba(36, 36, 36, 0.8);
+        -webkit-backdrop-filter: blur(20px);
+        backdrop-filter: blur(20px);
+      }
+
+      .prod---modal .footer .bottom {
+        border-top: 1px solid rgba(255, 255, 255, 0.15);
+        padding: 12px 16px 16px 16px;
+        background: rgba(28, 28, 28, 0.95);
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-orient: horizontal;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: row;
+        flex-direction: row;
+        gap: 4px;
+      }
+
+      .prod---modal .sponsor {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        padding: 12px 16px;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        gap: 8px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .prod---modal .sponsor .by {
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.6);
+      }
+
+      .prod---modal .sponsor .request {
+        position: relative;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-pack: center;
+        -ms-flex-pack: center;
+        justify-content: center;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        gap: 4px;
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 14px;
+        height: 44px;
+        width: 100%;
+        border-radius: 8px;
+        outline-offset: -1.5px;
+        outline: 1.5px dashed rgba(255, 255, 255, 0.1);
+      }
+
+      .prod---modal .sponsor .request:hover {
+        background: rgba(255, 255, 255, 0.02);
+        outline: 1.5px dashed rgba(255, 255, 255, 0.2);
+      }
+
+      .prod---modal .sponsor .request:hover p {
+        color: rgba(255, 255, 255, 0.7);
+      }
+
+      .prod---modal .sponsor .gallery {
+        display: none;
+        gap: 20px;
+        -webkit-animation: slide 18s infinite linear;
+        animation: slide 18s infinite linear;
+      }
+
+      .prod---modal .sponsor .gallery .item {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        gap: 8px;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        padding: 0;
+        margin: 0;
+      }
+
+      @-webkit-keyframes slide {
+        to {
+          -webkit-transform: translateX(calc(-100% - 64px - 40px));
+          transform: translateX(calc(-100% - 64px - 40px));
+        }
+      }
+
+      @keyframes slide {
+        to {
+          -webkit-transform: translateX(calc(-100% - 64px - 40px));
+          transform: translateX(calc(-100% - 64px - 40px));
+        }
+      }
+
+      .prod---modal .sponsor .item .img {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        min-width: 44px;
+        height: 44px;
+        -webkit-box-pack: center;
+        -ms-flex-pack: center;
+        justify-content: center;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        outline: 1px solid rgba(255, 255, 255, 0.1);
+        outline-offset: -1px;
+        border-radius: 8px;
+      }
+
+      .prod---modal .sponsor .item .text {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        gap: 2px;
+        line-height: 16px;
+      }
+
+      .prod---modal .sponsor .item .text .head {
+        font-size: 14px;
+        white-space: nowrap;
+      }
+
+      .prod---modal .sponsor .item .text .desc {
+        white-space: nowrap;
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.6);
+      }
+
+      .prod---modal button.timer {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        width: 100%;
+        max-width: 36px;
+        height: 36px;
+        -webkit-transition: 0.2s;
+        -o-transition: 0.2s;
+        transition: 0.2s;
+        border-radius: 100px;
+        background: rgba(255, 255, 255, 0.1);
+        border: none;
+      }
+
+      .prod---modal button.timer.disabled {
+        opacity: 0;
+        max-width: 0px;
+      }
+
+      .prod---modal button.timer .stop {
+        display: none;
+      }
+
+      .prod---modal button.timer.active .watch {
+        display: none;
+      }
+
+      .prod---modal button.timer.active .stop {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        height: 13.5px;
+        width: 13.5px;
+        background: rgba(255, 255, 255, 0.6);
+      }
+
+      .prod---modal .footer button {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        -webkit-box-pack: center;
+        -ms-flex-pack: center;
+        justify-content: center;
+      }
+
+      .prod---modal .footer .btns {
+        overflow: hidden;
+        height: 36px;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        width: 100%;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+        flex-direction: column;
+      }
+
+      .prod---modal .footer .btns button {
+        -webkit-transform: translateY(-100%);
+        -ms-transform: translateY(-100%);
+        transform: translateY(-100%);
+      }
+      .prod---modal .footer .btns.active button {
+        -webkit-transform: translateY(0);
+        -ms-transform: translateY(0);
+        transform: translateY(0);
+      }
+
+      .prod---modal .footer .turn {
+        width: 100%;
+        padding: 8px 12px;
+        min-height: 36px;
+        max-width: 220px;
+        font-size: 14px;
+        color: #fff;
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.1);
+        -webkit-transition: 0.2s;
+        -o-transition: 0.2s;
+        transition: 0.2s;
+        border: none;
+      }
+
+      .prod---modal .footer .turn.active {
+        max-width: 300px;
+      }
+
+      .prod---modal .footer .display {
+        width: 100%;
+        min-height: 36px;
+        padding: 8px 12px;
+        border-radius: 24px;
+        background: transparent;
+        outline: 1px solid rgba(255, 255, 255, 0.1);
+        outline-offset: -1px;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        color: rgba(255, 255, 255, 0.8);
+        -webkit-box-pack: center;
+        -ms-flex-pack: center;
+        justify-content: center;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        cursor: default;
+        position: relative;
+      }
+
+      .prod---modal .footer .display #d {
+        opacity: 0;
+        position: absolute;
+        left: 12px;
+      }
+
+      .prod---modal .footer .display #d.active {
+        opacity: 1;
+      }
+
+      .prod---modal .title {
+        text-align: left;
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.6);
+      }
+
+      .prod---modal a {
+        text-align: left;
+      }
+
+      .prod---modal p {
+        text-align: left;
+      }
+
+      .prod---modal .opts {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        gap: 2px;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+        flex-direction: column;
+      }
+
+      .prod---modal .item {
+        padding: 4px 8px;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-pack: justify;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        border-radius: 100px;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+      }
+
+      .prod---modal .item p {
+        font-size: 16px;
+        color: #fff;
+      }
+
+      .prod---modal .switch {
+        position: relative;
+        width: 40px;
+        height: 24px;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+      }
+
+      .prod---modal .slider * {
+        pointer-events: none;
+      }
+
+      .prod---modal .slider {
+        padding: 4px;
+        outline: 2px solid rgba(255, 255, 255, 0.1);
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        background: transparent;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        outline-offset: -1px;
+        border-radius: 100px;
+        -webkit-transition: 0.2s;
+        -o-transition: 0.2s;
+        transition: 0.2s;
+      }
+
+      .prod---modal .slider:before {
+        position: absolute;
+        content: "";
+        height: 16px;
+        width: 16px;
+
+        border-radius: 100%;
+        background-color: white;
+        -webkit-transition: 0.2s;
+        -o-transition: 0.2s;
+        transition: 0.2s;
+      }
+
+      .prod---modal .item.locked .slider.active {
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      .prod---modal .item.disabled,
+      .prod---modal .item.locked {
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        pointer-events: none;
+      }
+
+      .prod---modal .item.disabled p,
+      .prod---modal .item.locked p {
+        color: rgba(255, 255, 255, 0.4);
+      }
+
+      .prod---modal .item.disabled .slider {
+        background: transparent;
+      }
+
+      .prod---modal .item.disabled .slider:before,
+      .prod---modal .item.locked .slider:before {
+        background: rgba(255, 255, 255, 0.1) !important;
+      }
+
+      .prod---modal .slider.active {
+        background-color: rgba(255, 255, 255, 0.3);
+        outline: 2px solid rgba(255, 255, 255, 0);
+      }
+
+      .prod---modal .slider.active:before {
+        -webkit-transform: translateX(16px);
+        -ms-transform: translateX(16px);
+        transform: translateX(16px);
+      }
+
+      .prod---modal .item.disabled .slider.active {
+        background: transparent;
+        outline: 2px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .prod---modal .item.disabled .slider.active:before {
+        -webkit-transform: translateX(0px);
+        -ms-transform: translateX(0px);
+        transform: translateX(0px);
+      }
+
+      .prod---modal .footer button {
+        cursor: pointer;
+      }
+
+      .prod---modal .footer button:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      .prod---modal .footer button.display:hover {
+        background: none;
+      }
+
+      .prod---modal .popin {
+        opacity: 0;
+        height: 100%;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-align: end;
+        -ms-flex-align: end;
+        align-items: flex-end;
+        position: absolute;
+        overflow: hidden;
+        width: 100%;
+        border-radius: 16px;
+        background: rgba(20, 20, 20, 0.66);
+        pointer-events: none;
+      }
+
+      .prod---modal .popin.active {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      .prod---modal .container {
+        opacity: 1;
+        transform: translateY(500px);
+        width: 100%;
+        background: rgba(40, 40, 40);
+        overflow: hidden;
+        border-radius: 16px;
+      }
+
+      .prod---modal .popin.active .container {
+        transform: translateY(0);
+      }
+
+      .prod---modal .popin .menu {
+        position: relative;
+        padding: 16px;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-pack: center;
+        -ms-flex-pack: center;
+        justify-content: center;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .prod---modal .popin .menu::before {
+        content: "";
+        position: absolute;
+        top: 6px;
+        height: 5px;
+        width: 32px;
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      .prod---modal .popin .menu p {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 14px;
+        line-height: 26px;
+      }
+
+      .prod---modal .popin .x {
+        position: absolute;
+        right: 16px;
+      }
+
+      .prod---modal .popin .content {
+        padding: 16px;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .prod---modal .popin .content .description {
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.4);
+        width: 100%;
+      }
+
+      .prod---modal .popin .btns {
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 12px 16px 16px 16px;
+      }
+
+      .prod---modal .popin .btns button {
+        padding: 8px 12px;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        -webkit-box-pack: center;
+        -ms-flex-pack: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 24px;
+        width: 100%;
+        height: 36px;
+        color: #fff;
+        font-size: 14px;
+      }
+
+      .prod---modal .popin .btns button.inactive {
+        background: rgba(255, 255, 255, 0.05);
+        color: rgba(255, 255, 255, 0.1);
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        pointer-events: none;
+        cursor: default;
+      }
+
+      .prod---modal .popin #timer-container .options {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        padding: 0;
+        gap: 4px;
+      }
+
+      .prod---modal .popin #timer-container .options .option {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        padding: 0;
+        gap: 4px;
+      }
+
+      .prod---modal .popin #url-container .options {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        position: relative;
+        padding: 0;
+        gap: 6px;
+      }
+
+      .prod---modal .popin #url-container .options .option {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: reverse;
+        -ms-flex-direction: column-reverse;
+        flex-direction: column-reverse;
+        gap: 4px;
+        max-height: 250px;
+
+        overflow: scroll;
+        overflow-anchor: auto !important;
+      }
+
+      .prod---modal #pop-url .links-container {
+        transition-duration: 0s;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+        flex-direction: column;
+      }
+
+      .prod---modal .popin .option-row {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        gap: 4px;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+      }
+
+      .prod---modal .popin .link {
+        opacity: 1;
+        height: 40px;
+        transform: scale(1);
+        animation: link 0.2s;
+      }
+
+      .prod---modal .popin .link.active {
+        opacity: 0;
+        height: 0px;
+        animation: link-reverse 0.2s;
+      }
+
+      @keyframes link {
+        0% {
+          height: 0px;
+          opacity: 0;
+          transform: scaleY(0);
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1);
+          height: 40px;
+        }
+      }
+
+      @keyframes link-reverse {
+        0% {
+          opacity: 1;
+          transform: scale(1);
+          height: 40px;
+        }
+        100% {
+          height: 0px;
+          opacity: 0;
+          transform: scale(0);
+        }
+      }
+
+      .prod---modal .popin .link input {
+        padding-left: 36px;
+      }
+
+      .prod---modal .popin #url-container .option-row .link-svg {
+        content: "";
+        position: absolute;
+        height: 18px;
+        width: 18px;
+        left: 12px;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        -webkit-box-pack: center;
+        -ms-flex-pack: center;
+        justify-content: center;
+      }
+
+      .prod---modal .popin #url-container .option .add {
+        width: 100%;
+        height: 34px;
+        padding: 8px;
+      }
+      .prod---modal .popin #url-container .option .add svg {
+      }
+
+      .prod---modal .popin input {
+        height: 36px;
+        color: #fff;
+        padding: 8px 12px;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        border-radius: 24px;
+        background: transparent;
+        border: none;
+        outline: 1px solid rgba(255, 255, 255, 0.1);
+        outline-offset: -1px;
+        width: 100%;
+        position: relative;
+        isolation: isolate;
+      }
+
+      .prod---modal .popin input:hover {
+        outline: 1px solid rgba(255, 255, 255, 0.2);
+      }
+      .prod---modal .popin input:focus {
+        outline: 1px solid rgba(255, 255, 255, 0.3);
+      }
+
+      .prod---modal .popin .option button {
+        border-radius: 24px;
+        height: 36px;
+        min-width: 36px;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        -webkit-box-pack: center;
+        -ms-flex-pack: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      .prod---modal .popin .options .option button:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      .prod---modal .popin #url-container .options .option button:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      .prod---modal .switch-container {
+        width: 100%;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        -webkit-box-pack: justify;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+      }
+
+      .prod---modal label {
+        position: relative;
+        width: 100%;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+      }
+
+      .prod---modal .popin #days label::before {
+        position: absolute;
+        content: "Days";
+        right: 12px;
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.4);
+      }
+      .prod---modal .popin #hours label::before {
+        position: absolute;
+        content: "Hours";
+        right: 12px;
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.4);
+      }
+      .prod---modal .popin #minutes label::before {
+        position: absolute;
+        content: "Minutes";
+        right: 12px;
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.4);
+      }
+
+      .prod---modal .popin input::-webkit-outer-spin-button,
+      .prod---modal .popin input::-webkit-inner-spin-button {
+        display: none;
+        -webkit-appearance: none;
+        margin: 0;
+      }
+
+      .prod---modal .popin input[type="number"] {
+        -moz-appearance: textfield; /* Firefox */
+      }
+
+      .prod---modal .info {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        gap: 4px;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+        flex-direction: column;
+      }
+
+      .prod---modal .info .item {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-pack: justify;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        width: 100%;
+        padding: 4px 8px;
+      }
+
+      .prod---modal .info .item:hover p {
+        color: rgba(255, 255, 255, 0.8);
+      }
+
+      .prod---modal .info .item:hover svg {
+        opacity: 0.8;
+      }
+
+      .prod---modal .info .item svg {
+        height: 18px;
+        min-width: 18px;
+        opacity: 0.6;
+      }
+
+      .prod---modal .info .item p {
+        width: 100%;
+        color: #fff;
+        font-size: 16px;
+      }
+
+      .prod---modal *::-webkit-scrollbar {
+        display: none;
+      }
+
+      .prod---modal button.stroke {
+        width: 100%;
+        background: none;
+        border-radius: 24px;
+        outline: 1px solid rgba(255, 255, 255, 0.1);
+        outline-offset: -1px;
+        padding: 8px 12px;
+        height: 36px;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        -webkit-box-pack: center;
+        -ms-flex-pack: center;
+        justify-content: center;
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 14px;
+      }
+
+      .prod---modal button.stroke:hover {
+        color: rgba(255, 255, 255);
+        outline: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .prod---modal .popin #url-container {
+        display: none;
+      }
+
+      .prod---modal .popin#pop-url #url-container {
+        display: unset;
+      }
+
+      .prod---modal .popin #timer-container {
+        display: none;
+      }
+
+      .prod---modal .popin#pop-timer #timer-container {
+        display: unset;
+      }
+
+      .prod---modal #prod---example {
+        display: none;
+      }
+
+      .prod---modal #block-sites .item p {
+        -webkit-transition: 0.1s;
+        -o-transition: 0.1s;
+        transition: 0.1s;
+      }
+      .prod---modal #block-sites .item p:hover {
+        color: rgba(255, 255, 255, 0.8);
+        cursor: pointer;
+      }
+
+      .prod---modal #pop-url .btns {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-orient: horizontal;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: row;
+        flex-direction: row;
+        gap: 8px;
+      }
+
+      .prod---modal #pop-url .btns .delete-link {
+        display: none;
+      }
+
+      .prod---modal #pop-url .btns.active .delete-link {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        white-space: nowrap;
+        width: 68px;
+        background: rgba(255, 0, 0, 0.1);
+        padding: 8px 12px;
+        color: #ff3639;
+      }
+
+      .prod---modal #pop-url .btns.active .delete-link:hover {
+        background: rgba(255, 0, 0, 0.2);
+      }
+
+      .prod---modal #pop-url .btns .set-link.disabled {
+        background: rgba(255, 255, 255, 0.05);
+        color: rgba(255, 255, 255, 0.1);
+        pointer-events: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+
+      .prod---modal #pop-url .btns .set-link:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      .prod---modal #block-sites * {
+        -webkit-transition: 0.2s;
+        -o-transition: 0.2s;
+        transition: 0.2s;
+      }
+
+      .prod---modal .popup {
+        display: none;
+        opacity: 0;
+        pointer-events: none;
+        user-select: none;
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        justify-content: center;
+        align-items: center;
+        z-index: 9;
+        background: rgba(17, 17, 17, 0.7);
+      }
+
+      .prod---modal .popup.active {
+        display: flex;
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      .prod---modal .popup .box {
+        padding: 16px 12px 12px 12px;
+        width: 100%;
+        display: flex;
+        opacity: 0;
+        pointer-events: none;
+        user-select: none;
+        transform: scale(0);
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        max-width: 218px;
+        border-radius: 24px;
+        background: #282828;
+      }
+
+      .prod---modal .popup.active .box {
+        transform: scale(1);
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      .prod---modal .popup .box p {
+        color: #fff;
+        font-size: 14px;
+        text-align: center;
+        pointer-events: all;
+        line-height: 20px;
+      }
+
+      .prod---modal .popup .btns {
+        display: flex;
+        width: 100%;
+        gap: 4px;
+      }
+
+      .prod---modal .popup #stop-timer {
+        border-radius: 24px;
+        background: rgba(255, 0, 4, 0.1);
+        backdrop-filter: blur(24px);
+        color: #ff3639;
+        font-size: 14px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 36px;
+        padding: 8px 12px;
+        pointer-events: all;
+        white-space: nowrap;
+      }
+
+      .prod---modal .popup #stop-timer:hover {
+        background: rgba(255, 0, 0, 0.2);
+      }
+
+      .prod---modal .popup #cancel {
+        font-size: 14px;
+        height: 36px;
+        border-radius: 24px;
+        color: rgba(255, 255, 255, 0.8);
+        background: rgba(255, 255, 255, 0.1);
+        width: 100%;
+        backdrop-filter: blur(24px);
+        pointer-events: all;
+      }
+
+      .prod---modal .popup #cancel:hover {
+        color: rgba(255, 255, 255, 0.9);
+        background: rgba(255, 255, 255, 0.2);
+      }
+    </style>
+    <div class="prod---modal active">
+      <div class="header">
+        <div class="version">
+          <svg
+            width="32"
+            height="32"
+            viewBox="0 0 32 32"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect
+              width="32"
+              height="32"
+              rx="16"
+              fill="black"
+              fill-opacity="0.2"
+            ></rect>
+            <path
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M16.8748 9.11952C16.6504 9.3439 16.3588 9.45629 16 9.45629C15.6412 9.45629 15.3438 9.3439 15.1084 9.11952C14.884 8.88411 14.7721 8.58699 14.7721 8.22815C14.7721 7.88034 14.884 7.58894 15.1084 7.35353C15.2462 7.21579 15.4049 7.11811 15.585 7.0609C15.7127 7.02044 15.851 7 16 7C16.3588 7 16.6504 7.11771 16.8748 7.35353C17.1102 7.58894 17.2279 7.88034 17.2279 8.22815C17.2279 8.58699 17.1102 8.88411 16.8748 9.11952ZM20.7608 10.1625C20.5364 10.3869 20.2448 10.4993 19.8859 10.4993C19.5383 10.4993 19.2467 10.3869 19.0113 10.1625C18.8752 10.0264 18.7783 9.8699 18.7209 9.69293C18.679 9.56337 18.658 9.42278 18.658 9.27115C18.658 8.91231 18.7757 8.61519 19.0113 8.37937C19.2467 8.14395 19.5383 8.02625 19.8859 8.02625C20.0923 8.02625 20.2766 8.06548 20.4385 8.14314C20.558 8.20076 20.6655 8.27923 20.7608 8.37937C20.9964 8.61519 21.1141 8.91231 21.1141 9.27115C21.1141 9.47223 21.0771 9.6541 21.0029 9.81677C20.9449 9.94387 20.8642 10.0591 20.7608 10.1625ZM23.0826 13.2993C22.9722 13.3279 22.8543 13.3422 22.7291 13.3422C22.3812 13.3422 22.0896 13.2245 21.8542 12.9887C21.7384 12.873 21.6509 12.7435 21.592 12.6004C21.5314 12.4529 21.5009 12.2906 21.5009 12.1141C21.5009 11.7552 21.6186 11.4634 21.8542 11.2395C21.9783 11.1152 22.1176 11.0237 22.2727 10.9648C22.4123 10.9121 22.5643 10.8859 22.7291 10.8859C23.0879 10.8859 23.385 11.0036 23.6206 11.2395C23.856 11.4634 23.9738 11.7552 23.9738 12.1141C23.9738 12.4619 23.856 12.7533 23.6206 12.9887C23.4674 13.1424 23.288 13.2458 23.0826 13.2993ZM24.6467 16.8918C24.4225 17.1158 24.1309 17.2281 23.7721 17.2281C23.4243 17.2281 23.1326 17.1158 22.8972 16.8918C22.7906 16.7851 22.708 16.6658 22.6496 16.5334C22.5791 16.374 22.5439 16.1962 22.5439 16C22.5439 15.6526 22.6616 15.3608 22.8972 15.1254C23.1326 14.89 23.4243 14.7719 23.7721 14.7719C24.1309 14.7719 24.4225 14.89 24.6467 15.1254C24.8823 15.3608 25 15.6526 25 16C25 16.3588 24.8823 16.656 24.6467 16.8918ZM23.6206 20.7777C23.385 21.0131 23.0879 21.1308 22.7291 21.1308C22.3812 21.1308 22.0896 21.0131 21.8542 20.7777C21.6186 20.5423 21.5009 20.2505 21.5009 19.9027C21.5009 19.5438 21.6186 19.2467 21.8542 19.0113C22.0896 18.7759 22.3812 18.6582 22.7291 18.6582C23.0879 18.6582 23.385 18.7759 23.6206 19.0113C23.856 19.2467 23.9738 19.5438 23.9738 19.9027C23.9738 20.2505 23.856 20.5423 23.6206 20.7777ZM20.7608 23.6206C20.5364 23.856 20.2448 23.9738 19.8859 23.9738C19.6736 23.9738 19.4821 23.93 19.3117 23.8422C19.203 23.7862 19.1029 23.7122 19.0113 23.6206C18.7757 23.3852 18.658 23.0881 18.658 22.7289C18.658 22.3815 18.7757 22.0896 19.0113 21.8542C19.2467 21.6188 19.5383 21.5011 19.8859 21.5011C20.2448 21.5011 20.5364 21.6188 20.7608 21.8542C20.8991 21.9924 20.9968 22.1501 21.0538 22.3267C21.094 22.4513 21.1141 22.5854 21.1141 22.7289C21.1141 23.0881 20.9964 23.3852 20.7608 23.6206ZM16.3321 24.9636C16.2287 24.9877 16.1179 25 16 25C15.6412 25 15.3438 24.888 15.1084 24.6636C14.884 24.4282 14.7721 24.1311 14.7721 23.7719C14.7721 23.5888 14.8031 23.4212 14.8652 23.2692C14.9212 23.1326 15.0022 23.0088 15.1084 22.8972C15.3438 22.6618 15.6412 22.5441 16 22.5441C16.3588 22.5441 16.6504 22.6618 16.8748 22.8972C17.1102 23.1326 17.2279 23.4245 17.2279 23.7719C17.2279 24.1311 17.1102 24.4282 16.8748 24.6636C16.7242 24.814 16.5434 24.9142 16.3321 24.9636ZM12.9887 23.6206C12.7533 23.856 12.4617 23.9738 12.1141 23.9738C11.9338 23.9738 11.7691 23.9439 11.62 23.8847C11.4722 23.8258 11.3396 23.7379 11.2225 23.6206C10.9981 23.3852 10.8859 23.0881 10.8859 22.7289C10.8859 22.3815 10.9981 22.0896 11.2225 21.8542C11.4579 21.6188 11.7552 21.5011 12.1141 21.5011C12.4617 21.5011 12.7533 21.6188 12.9887 21.8542C13.1227 21.9883 13.2188 22.1403 13.2764 22.3108C13.3201 22.4399 13.342 22.5793 13.342 22.7289C13.342 23.0881 13.2243 23.3852 12.9887 23.6206ZM10.1458 20.7777C9.92139 21.0131 9.62999 21.1308 9.27095 21.1308C8.91211 21.1308 8.61498 21.0131 8.37937 20.7777C8.14395 20.5423 8.02625 20.2505 8.02625 19.9027C8.02625 19.5438 8.14395 19.2467 8.37937 19.0113C8.61498 18.7759 8.91211 18.6582 9.27095 18.6582C9.62999 18.6582 9.92139 18.7759 10.1458 19.0113C10.3814 19.2467 10.4991 19.5438 10.4991 19.9027C10.4991 20.2505 10.3814 20.5423 10.1458 20.7777ZM9.10277 16.8918C8.87859 17.1158 8.58699 17.2281 8.22794 17.2281C7.8691 17.2281 7.57198 17.1158 7.33636 16.8918C7.11219 16.656 7 16.3588 7 16C7 15.6526 7.11219 15.3608 7.33636 15.1254C7.57198 14.89 7.8691 14.7719 8.22794 14.7719C8.58699 14.7719 8.87859 14.89 9.10277 15.1254C9.22108 15.2435 9.30957 15.3759 9.36842 15.5222C9.42687 15.6677 9.45609 15.8271 9.45609 16C9.45609 16.3588 9.33838 16.656 9.10277 16.8918ZM10.1458 12.9887C9.92139 13.2245 9.62999 13.3422 9.27095 13.3422C8.91211 13.3422 8.61498 13.2245 8.37937 12.9887C8.14395 12.7533 8.02625 12.4619 8.02625 12.1141C8.02625 11.7552 8.14395 11.4634 8.37937 11.2395C8.61498 11.0036 8.91211 10.8859 9.27095 10.8859C9.62999 10.8859 9.92139 11.0036 10.1458 11.2395C10.3814 11.4634 10.4991 11.7552 10.4991 12.1141C10.4991 12.4619 10.3814 12.7533 10.1458 12.9887ZM12.9887 10.1625C12.7533 10.3869 12.4617 10.4993 12.1141 10.4993C11.7552 10.4993 11.4579 10.3869 11.2225 10.1625C10.9981 9.92712 10.8859 9.62999 10.8859 9.27115C10.8859 8.91231 10.9981 8.61519 11.2225 8.37937C11.4074 8.19422 11.6308 8.08224 11.8921 8.0426C11.9633 8.03156 12.0372 8.02625 12.1141 8.02625C12.4617 8.02625 12.7533 8.14395 12.9887 8.37937C13.2243 8.61519 13.342 8.91231 13.342 9.27115C13.342 9.62999 13.2243 9.92712 12.9887 10.1625Z"
+              fill="white"
+            ></path>
+          </svg>
+          <div class="text">
+            <p>Prod</p>
+            <span>beta 0.27</span>
+          </div>
+        </div>
+        <button class="x">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M4.0625 13L3 11.9375L6.9375 8L3 4.0625L4.0625 3L8 6.9375L11.9375 3L13 4.0625L9.0625 8L13 11.9375L11.9375 13L8 9.0625L4.0625 13Z"
+              fill="white"
+              fill-opacity="0.6"
+            ></path>
+          </svg>
+        </button>
+      </div>
+      <div class="main">
+        <div class="section">
+          <p class="title">General</p>
+          <div class="opts">
+            <div class="item" id="grayscale">
+              <div class="switch-container">
+                <p>Grayscale</p>
+                <label class="switch">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="section">
+          <p class="title">YouTube</p>
+          <div class="opts">
+            <div class="item" id="recommended">
+              <div class="switch-container">
+                <p>Hide Recommended</p>
+                <label class="switch">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+            <div class="item" id="comments">
+              <div class="switch-container">
+                <p>Hide Comments</p>
+                <label class="switch">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+            <div class="item" id="shorts">
+              <div class="switch-container">
+                <p>Hide Shorts</p>
+                <label class="switch">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+            <div class="item disabled" id="colored">
+              <div class="switch-container">
+                <p>Color Video</p>
+                <label class="switch">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="section" id="block-sites">
+          <p class="title">Block Sites</p>
+          <div class="opts">
+            <div class="item" id="prod---example">
+              <div class="switch-container">
+                <p class="editable">Option</p>
+                <label class="switch">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+            <div class="item" id="---YouTube">
+              <div class="switch-container">
+                <p class="editable">YouTube</p>
+                <label class="switch">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+            <div class="item" id="---Twitter">
+              <div class="switch-container">
+                <p class="editable">Twitter</p>
+                <label class="switch">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+            <div class="item" id="---Social-Media">
+              <div class="switch-container">
+                <p class="editable">Social Media</p>
+                <label class="switch">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+            <div class="item" id="---News">
+              <div class="switch-container">
+                <p class="editable">News</p>
+                <label class="switch">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+            <div class="item" id="---Adult">
+              <div class="switch-container">
+                <p class="editable">Adult</p>
+                <label class="switch">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+          <button class="stroke" id="url">Add Custom URL</button>
+        </div>
+        <div class="section">
+          <p class="title">Info</p>
+          <div class="info">
+            <a
+              href="https://discord.gg/9by8nGxd8F"
+              target="_blank"
+              class="item"
+            >
+              <p>Join Discord</p>
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 18 18"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M14.4668 3.90169C13.4472 3.42468 12.3571 3.07801 11.2174 2.88062C11.0774 3.13367 10.9139 3.47404 10.8012 3.7448C9.58965 3.5626 8.38926 3.5626 7.20002 3.7448C7.0873 3.47404 6.92006 3.13367 6.77884 2.88062C5.63791 3.07801 4.54654 3.42596 3.52701 3.90422C1.47062 7.0117 0.913167 10.042 1.19189 13.0292C2.5558 14.0478 3.87759 14.6665 5.17707 15.0714C5.49792 14.6298 5.78408 14.1604 6.03059 13.6657C5.5611 13.4873 5.11142 13.2671 4.68653 13.0115C4.79925 12.928 4.90951 12.8407 5.01603 12.7509C7.60757 13.963 10.4233 13.963 12.9839 12.7509C13.0917 12.8407 13.2019 12.928 13.3134 13.0115C12.8873 13.2684 12.4364 13.4885 11.9669 13.667C12.2134 14.1604 12.4983 14.6311 12.8204 15.0726C14.1211 14.6678 15.4442 14.0491 16.8081 13.0292C17.1351 9.56625 16.2494 6.56379 14.4668 3.90169ZM6.38366 11.1921C5.6057 11.1921 4.96772 10.4658 4.96772 9.58143C4.96772 8.69701 5.59208 7.96949 6.38366 7.96949C7.17525 7.96949 7.81322 8.69574 7.79959 9.58143C7.80083 10.4658 7.17525 11.1921 6.38366 11.1921ZM11.6163 11.1921C10.8384 11.1921 10.2004 10.4658 10.2004 9.58143C10.2004 8.69701 10.8247 7.96949 11.6163 7.96949C12.4079 7.96949 13.0459 8.69574 13.0322 9.58143C13.0322 10.4658 12.4079 11.1921 11.6163 11.1921Z"
+                  fill="white"
+                ></path>
+              </svg>
+            </a>
+            <a
+              href="https://buy.stripe.com/28E7sKcc01Aq9DJe4S9R609"
+              target="_blank"
+              class="item"
+            >
+              <p>Donate</p>
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 18 18"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M3.80582 14.626L2.49332 13.3135L11.4933 4.31354H3.43082V2.43854H14.6808V13.6885H12.8058V5.62604L3.80582 14.626Z"
+                  fill="white"
+                ></path>
+              </svg>
+            </a>
+            <a
+              href="https://chromewebstore.google.com/detail/prod/kgaddahbbpflkifbmkhindpbafggbobh/reviews"
+              target="_blank"
+              class="item"
+            >
+              <p>Rate Us</p>
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 18 18"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <mask
+                  id="mask0_647_52150"
+                  style="mask-type: alpha"
+                  maskUnits="userSpaceOnUse"
+                  x="0"
+                  y="0"
+                  width="18"
+                  height="18"
+                >
+                  <rect width="18" height="18" fill="#D9D9D9"></rect>
+                </mask>
+                <path
+                  d="M6 13.5L9 11.2125L12 13.5L10.875 9.7875L13.875 7.65H10.2L9 3.75L7.8 7.65H4.125L7.125 9.7875L6 13.5ZM9 16.5C7.9625 16.5 6.9875 16.3031 6.075 15.9094C5.1625 15.5156 4.36875 14.9813 3.69375 14.3063C3.01875 13.6313 2.48438 12.8375 2.09063 11.925C1.69687 11.0125 1.5 10.0375 1.5 9C1.5 7.9625 1.69687 6.9875 2.09063 6.075C2.48438 5.1625 3.01875 4.36875 3.69375 3.69375C4.36875 3.01875 5.1625 2.48438 6.075 2.09063C6.9875 1.69687 7.9625 1.5 9 1.5C10.0375 1.5 11.0125 1.69687 11.925 2.09063C12.8375 2.48438 13.6313 3.01875 14.3063 3.69375C14.9813 4.36875 15.5156 5.1625 15.9094 6.075C16.3031 6.9875 16.5 7.9625 16.5 9C16.5 10.0375 16.3031 11.0125 15.9094 11.925C15.5156 12.8375 14.9813 13.6313 14.3063 14.3063C13.6313 14.9813 12.8375 15.5156 11.925 15.9094C11.0125 16.3031 10.0375 16.5 9 16.5ZM9 15C10.675 15 12.0938 14.4188 13.2563 13.2563C14.4188 12.0938 15 10.675 15 9C15 7.325 14.4188 5.90625 13.2563 4.74375C12.0938 3.58125 10.675 3 9 3C7.325 3 5.90625 3.58125 4.74375 4.74375C3.58125 5.90625 3 7.325 3 9C3 10.675 3.58125 12.0938 4.74375 13.2563C5.90625 14.4188 7.325 15 9 15Z"
+                  fill="white"
+                ></path>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="footer">
+        <!-- <div class="sponsor">
+          <p class="by">Sponsored by</p>
+          <a href="https://prodextension.com/sponsor" class="request">
+            <svg
+              width="19"
+              height="18"
+              viewBox="0 0 19 18"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M8.75 9.75H4.5V8.25H8.75V4H10.25V8.25H14.5V9.75H10.25V14H8.75V9.75Z"
+                fill="white"
+                fill-opacity="0.6"
+              />
+            </svg>
+            <p>Become a Sponsor</p>
+          </a>
+          <div class="gallery">
+            <div class="item">
+              <div class="img"></div>
+              <div class="text">
+                <p class="head">Sponsor Slot</p>
+                <p class="desc">Your App</p>
+              </div>
+            </div>
+            <div class="item">
+              <div class="img"></div>
+              <div class="text">
+                <p class="head">Sponsor Slot</p>
+                <p class="desc">Your App</p>
+              </div>
+            </div>
+            <div class="item">
+              <div class="img"></div>
+              <div class="text">
+                <p class="head">Sponsor Slot</p>
+                <p class="desc">Your App</p>
+              </div>
+            </div>
+            <div class="item">
+              <div class="img"></div>
+              <div class="text">
+                <p class="head">Sponsor Slot</p>
+                <p class="desc">Your App</p>
+              </div>
+            </div>
+          </div>
+        </div> -->
+        <div class="bottom">
+          <div class="btns">
+            <button class="display">
+              <p id="d"></p>
+              <p id="time">00:00:00</p>
+            </button>
+            <button class="turn">Turn Off</button>
+          </div>
+          <button class="timer">
+            <svg
+              class="watch"
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <mask
+                id="mask0_41_2181"
+                style="mask-type: alpha"
+                maskUnits="userSpaceOnUse"
+                x="0"
+                y="0"
+                width="20"
+                height="20"
+              >
+                <rect width="20" height="20" fill="#D9D9D9"></rect>
+              </mask>
+              <path
+                d="M7.5 3V1.5H12.5V3H7.5ZM9.25 12H10.75V7H9.25V12ZM10 18C9.02778 18 8.11861 17.8159 7.2725 17.4477C6.42639 17.0797 5.68688 16.5791 5.05396 15.946C4.4209 15.3131 3.92035 14.5736 3.55229 13.7275C3.1841 12.8814 3 11.9722 3 11C3 10.0278 3.1841 9.11861 3.55229 8.2725C3.92035 7.42639 4.4209 6.68688 5.05396 6.05396C5.68688 5.4209 6.42639 4.92035 7.2725 4.55229C8.11861 4.1841 9.02472 4 9.99083 4C10.8003 4 11.5771 4.13542 12.3212 4.40625C13.0654 4.67708 13.7569 5.05556 14.3958 5.54167L15.4792 4.47917L16.5208 5.52083L15.4583 6.60417C15.9444 7.22917 16.3229 7.91535 16.5938 8.66271C16.8646 9.41007 17 10.1901 17 11.0029C17 11.9732 16.8159 12.8814 16.4477 13.7275C16.0797 14.5736 15.5791 15.3131 14.946 15.946C14.3131 16.5791 13.5736 17.0797 12.7275 17.4477C11.8814 17.8159 10.9722 18 10 18ZM10 16.5C11.5278 16.5 12.8264 15.9653 13.8958 14.8958C14.9653 13.8264 15.5 12.5278 15.5 11C15.5 9.47222 14.9653 8.17361 13.8958 7.10417C12.8264 6.03472 11.5278 5.5 10 5.5C8.47222 5.5 7.17361 6.03472 6.10417 7.10417C5.03472 8.17361 4.5 9.47222 4.5 11C4.5 12.5278 5.03472 13.8264 6.10417 14.8958C7.17361 15.9653 8.47222 16.5 10 16.5Z"
+                fill="white"
+                fill-opacity="0.7"
+              ></path>
+            </svg>
+            <div class="stop"></div>
+          </button>
+        </div>
+      </div>
+      <div class="popin" id="pop-url">
+        <div class="container">
+          <div id="url-container">
+            <div class="menu">
+              <p>Add Custom URL</p>
+            </div>
+            <div class="content">
+              <label for="input" id="url-title">
+                <input class="link-title" type="text" placeholder="Title" />
+              </label>
+              <div class="options">
+                <div class="option urls">
+                  <div class="links-container">
+                    <div class="option-row link" id="prod---example">
+                      <label for="input">
+                        <div class="link-svg">
+                          <svg
+                            width="14"
+                            height="8"
+                            viewBox="0 0 14 8"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M6.30122 7.49864H3.50155C2.53333 7.49864 1.70801 7.15743 1.02558 6.47501C0.343163 5.79259 0.00195312 4.96727 0.00195312 3.99904C0.00195312 3.03082 0.343163 2.2055 1.02558 1.52308C1.70801 0.840661 2.53333 0.499451 3.50155 0.499451H6.30122V1.89929H3.50155C2.91828 1.89929 2.42251 2.10343 2.01422 2.51172C1.60593 2.92 1.40179 3.41578 1.40179 3.99904C1.40179 4.58231 1.60593 5.07809 2.01422 5.48637C2.42251 5.89466 2.91828 6.0988 3.50155 6.0988H6.30122V7.49864ZM4.20147 4.69896V3.29913H9.80082V4.69896H4.20147ZM7.70106 7.49864V6.0988H10.5007C11.084 6.0988 11.5798 5.89466 11.9881 5.48637C12.3963 5.07809 12.6005 4.58231 12.6005 3.99904C12.6005 3.41578 12.3963 2.92 11.9881 2.51172C11.5798 2.10343 11.084 1.89929 10.5007 1.89929H7.70106V0.499451H10.5007C11.469 0.499451 12.2943 0.840661 12.9767 1.52308C13.6591 2.2055 14.0003 3.03082 14.0003 3.99904C14.0003 4.96727 13.6591 5.79259 12.9767 6.47501C12.2943 7.15743 11.469 7.49864 10.5007 7.49864H7.70106Z"
+                              fill="white"
+                              fill-opacity="0.6"
+                            ></path>
+                          </svg>
+                        </div>
+                        <input
+                          type="text"
+                          placeholder="example.com"
+                          id="prod---example"
+                        />
+                      </label>
+                      <button class="remove">
+                        <svg
+                          width="20"
+                          height="20"
+                          viewBox="0 0 20 20"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <mask
+                            id="mask0_41_2331"
+                            maskContentUnits="userSpaceOnUse"
+                          >
+                            <rect width="20" height="20" fill="white"></rect>
+                          </mask>
+                          <path
+                            fill="white"
+                            fill-opacity="0.6"
+                            d="M4.83325 10.75V9.25H15.1666V10.75H4.83325Z"
+                          ></path>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                  <p class="description">Add one or multiple URLs</p>
+                </div>
+                <div class="option" id="add-url">
+                  <button class="add">
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 18 18"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <mask
+                        id="mask0_41_2335"
+                        style="mask-type: alpha"
+                        maskUnits="userSpaceOnUse"
+                        x="0"
+                        y="0"
+                        width="20"
+                        height="20"
+                      >
+                        <rect width="18" height="18" fill="#D9D9D9"></rect>
+                      </mask>
+                      <path
+                        d="M9.25 10.75H5V9.25H9.25V5H10.75V9.25H15V10.75H10.75V15H9.25V10.75Z"
+                        fill="white"
+                        fill-opacity="0.6"
+                      ></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="btns">
+              <button class="delete-link">Delete</button>
+              <button class="set-link disabled">Add to Block Sites</button>
+            </div>
+          </div>
+          <div id="timer-container">
+            <div class="menu">
+              <p>Set a Timer</p>
+            </div>
+            <div class="content">
+              <p class="description">Lock selected options for:</p>
+              <div class="options">
+                <div class="option" id="days">
+                  <label for="input">
+                    <input
+                      oninput="this.value = !!this.value &amp;&amp; Math.abs(this.value) >= 0 ? Math.abs(this.value) : 0; if (this.value > 364) this.value = 364"
+                      min="0"
+                      max="364"
+                      value="0"
+                      type="number"
+                    />
+                  </label>
+                  <button class="minus">
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 20 20"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <mask
+                        id="mask0_41_2331"
+                        style="mask-type: alpha"
+                        maskUnits="userSpaceOnUse"
+                        x="0"
+                        y="0"
+                        width="20"
+                        height="20"
+                      >
+                        <rect width="20" height="20" fill="#D9D9D9"></rect>
+                      </mask>
+                      <path
+                        d="M4.83325 10.75V9.25H15.1666V10.75H4.83325Z"
+                        fill="white"
+                        fill-opacity="0.6"
+                      ></path>
+                    </svg>
+                  </button>
+                  <button class="plus">
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 20 20"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <mask
+                        id="mask0_41_2335"
+                        style="mask-type: alpha"
+                        maskUnits="userSpaceOnUse"
+                        x="0"
+                        y="0"
+                        width="20"
+                        height="20"
+                      >
+                        <rect width="20" height="20" fill="#D9D9D9"></rect>
+                      </mask>
+                      <path
+                        d="M9.25 10.75H5V9.25H9.25V5H10.75V9.25H15V10.75H10.75V15H9.25V10.75Z"
+                        fill="white"
+                        fill-opacity="0.6"
+                      ></path>
+                    </svg>
+                  </button>
+                </div>
+                <div class="option" id="hours">
+                  <label for="input">
+                    <input
+                      oninput="this.value = !!this.value &amp;&amp; Math.abs(this.value) >= 0 ? Math.abs(this.value) : 0; if (this.value > 23) this.value = 23"
+                      min="0"
+                      max="23"
+                      value="0"
+                      type="number"
+                    />
+                  </label>
+                  <button class="minus">
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 20 20"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <mask
+                        id="mask0_41_2331"
+                        style="mask-type: alpha"
+                        maskUnits="userSpaceOnUse"
+                        x="0"
+                        y="0"
+                        width="20"
+                        height="20"
+                      >
+                        <rect width="20" height="20" fill="#D9D9D9"></rect>
+                      </mask>
+                      <path
+                        d="M4.83325 10.75V9.25H15.1666V10.75H4.83325Z"
+                        fill="white"
+                        fill-opacity="0.6"
+                      ></path>
+                    </svg>
+                  </button>
+                  <button class="plus">
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 20 20"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <mask
+                        id="mask0_41_2335"
+                        style="mask-type: alpha"
+                        maskUnits="userSpaceOnUse"
+                        x="0"
+                        y="0"
+                        width="20"
+                        height="20"
+                      >
+                        <rect width="20" height="20" fill="#D9D9D9"></rect>
+                      </mask>
+                      <path
+                        d="M9.25 10.75H5V9.25H9.25V5H10.75V9.25H15V10.75H10.75V15H9.25V10.75Z"
+                        fill="white"
+                        fill-opacity="0.6"
+                      ></path>
+                    </svg>
+                  </button>
+                </div>
+                <div class="option" id="minutes">
+                  <label for="input">
+                    <input
+                      oninput="this.value = !!this.value &amp;&amp; Math.abs(this.value) >= 0 ? Math.abs(this.value) : 0; if (this.value > 59) this.value = 59"
+                      min="0"
+                      max="59"
+                      value="0"
+                      type="number"
+                    />
+                  </label>
+                  <button class="minus">
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 20 20"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <mask
+                        id="mask0_41_2331"
+                        style="mask-type: alpha"
+                        maskUnits="userSpaceOnUse"
+                        x="0"
+                        y="0"
+                        width="20"
+                        height="20"
+                      >
+                        <rect width="20" height="20" fill="#D9D9D9"></rect>
+                      </mask>
+                      <path
+                        d="M4.83325 10.75V9.25H15.1666V10.75H4.83325Z"
+                        fill="white"
+                        fill-opacity="0.6"
+                      ></path>
+                    </svg>
+                  </button>
+                  <button class="plus">
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 20 20"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <mask
+                        id="mask0_41_2335"
+                        style="mask-type: alpha"
+                        maskUnits="userSpaceOnUse"
+                        x="0"
+                        y="0"
+                        width="20"
+                        height="20"
+                      >
+                        <rect width="20" height="20" fill="#D9D9D9"></rect>
+                      </mask>
+                      <path
+                        d="M9.25 10.75H5V9.25H9.25V5H10.75V9.25H15V10.75H10.75V15H9.25V10.75Z"
+                        fill="white"
+                        fill-opacity="0.6"
+                      ></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="btns">
+              <button class="set-timer inactive">Start Timer</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="popup">
+        <div class="box">
+          <p>Are you sure you want to stop being productive?</p>
+          <div class="btns">
+            <button id="stop-timer">Give Up</button>
+            <button id="cancel">Keep Going</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

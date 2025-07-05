@@ -26,12 +26,6 @@ jobs:
       - name: Create zip files
         run: bun run zip
 
-      - name: Create Firefox build
-        run: bun run build:firefox
-
-      - name: Create Firefox zip
-        run: bun run zip:firefox
-
       - name: Create release
         uses: softprops/action-gh-release@v1
         with:
