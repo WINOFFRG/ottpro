@@ -1,12 +1,12 @@
-import { useState } from "react";
 import { ChevronRight } from "lucide-react";
-import { Switch } from "@/components/ui/switch";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
 	Collapsible,
 	CollapsibleContent,
 	CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 
 interface RuleItemProps {
 	title: string;
@@ -24,15 +24,15 @@ export function RuleItem({
 	const [isExpanded, setIsExpanded] = useState(false);
 
 	return (
-		<Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
+		<Collapsible onOpenChange={setIsExpanded} open={isExpanded}>
 			<div className="flex flex-col gap-1">
-				<div className="py-1 flex items-center justify-between rounded-full">
-					<div className="flex items-center gap-1 flex-1">
+				<div className="flex items-center justify-between rounded-full py-1">
+					<div className="flex flex-1 items-center gap-1">
 						<CollapsibleTrigger asChild>
 							<Button
+								className="size-6 justify-start text-white/40 transition-colors hover:bg-transparent hover:text-white/60"
 								size="icon"
 								variant="ghost"
-								className="size-6 text-white/40 hover:text-white/60 transition-colors hover:bg-transparent justify-start"
 							>
 								<ChevronRight
 									className={`size-4 transition-transform duration-200 ${
@@ -41,22 +41,15 @@ export function RuleItem({
 								/>
 							</Button>
 						</CollapsibleTrigger>
-						<p className="text-white text-base font-normal m-0">{title}</p>
+						<p className="m-0 font-normal text-base text-white">{title}</p>
 					</div>
 
-					<Switch
-						className="relative w-10 h-6 p-1 
-                       data-[state=unchecked]:bg-transparent data-[state=checked]:bg-white/30
-                       border-2 border-white/10 data-[state=checked]:border-transparent
-                       rounded-full shadow-none cursor-pointer 
-                       focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none
-                       transition-all duration-200"
-					/>
+					<Switch className="relative h-6 w-10 cursor-pointer rounded-full border-2 border-white/10 p-1 shadow-none transition-all duration-200 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=checked]:border-transparent data-[state=checked]:bg-white/30 data-[state=unchecked]:bg-transparent" />
 				</div>
 
 				{description && (
-					<CollapsibleContent className="ml-4 animate-in slide-in-from-top-2 fade-in duration-200">
-						<p className="text-white/60 text-xs leading-relaxed m-0 pl-1">
+					<CollapsibleContent className="slide-in-from-top-2 fade-in animate-in duration-200">
+						<p className="m-0 pl-1 text-white/60 text-xs leading-relaxed">
 							{description}
 						</p>
 					</CollapsibleContent>

@@ -3,7 +3,6 @@ import type { ContentScriptContext } from "#imports";
 import App from "@/components/App";
 
 import "@/assets/global.css";
-import { logger } from "@/lib/logger";
 
 const ModalRootTagName = "ott-pro-ui";
 
@@ -34,11 +33,11 @@ export default defineContentScript({
 			}
 		});
 
-		if (isDev) {
-			document.addEventListener("DOMContentLoaded", () => {
-				ui.mount();
-			});
-		}
+		// if (isDev) {
+		document.addEventListener("DOMContentLoaded", () => {
+			ui.mount();
+		});
+		// }
 
 		document.addEventListener("mousedown", (e) => {
 			if (e.target !== document.getElementsByTagName(ModalRootTagName)?.[0]) {
