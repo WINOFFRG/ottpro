@@ -6,12 +6,6 @@ export default defineBackground(async () => {
     id: browser.runtime.id,
   });
 
-  appHandlers.forEach((handler) => {
-    if (handler.enabled) {
-      extensionContext.enabledApps.add(handler.id);
-    }
-  });
-
   (browser.action ?? browser.browserAction).onClicked.addListener(
     async (tab) => {
       console.log("browser action triggered,", tab);
@@ -31,15 +25,6 @@ async function setupDeclarativeNetRequest() {
   try {
     const allRules: Browser.declarativeNetRequest.Rule[] = [];
 
-    for (const handler of appHandlers) {
-      if (!extensionContext.enabledApps.has(handler.id)) continue;
-
-      if (handler.setupBackgroundRules) {
-        const rules = await handler.setupBackgroundRules();
-        allRules.push(...rules);
-      }
-    }
-
     // Update dynamic rules
     await browser.declarativeNetRequest.updateDynamicRules({
       removeRuleIds: Array.from({ length: 50 }, (_, i) => i + 1), // Remove existing rules
@@ -58,8 +43,6 @@ function setupWebRequestMonitoring() {
   // Monitor requests for statistics
   const handleRequest = (details: any) => {
     for (const handler of appHandlers) {
-      if (!extensionContext.enabledApps.has(handler.id)) continue;
-
       if (handler.handleBackgroundRequest) {
         const result = handler.handleBackgroundRequest(details);
         if (result) {

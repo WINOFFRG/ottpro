@@ -3,6 +3,7 @@ import type { ContentScriptContext } from "#imports";
 import App from "@/components/App";
 
 import "@/assets/global.css";
+import { logger } from "@/lib/logger";
 
 const ModalRootTagName = "ott-pro-ui";
 

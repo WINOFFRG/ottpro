@@ -1,4 +1,5 @@
 import React from "react";
+import { cn } from "../lib/utils";
 import { Button } from "./ui/button";
 import {
 	Drawer,
@@ -7,7 +8,6 @@ import {
 	DrawerTitle,
 	DrawerTrigger,
 } from "./ui/drawer";
-import { cn } from "../lib/utils";
 
 interface OTTModalFooterProps {
 	onTurnOff: () => void;
@@ -79,15 +79,13 @@ export function OTTModalFooter({ onTurnOff }: OTTModalFooterProps) {
 
 	return (
 		<>
-			<div className="w-full bg-[rgba(28,28,28,0.95)] backdrop-blur-[20px] flex-shrink-0">
-				<div className="border-t border-white/15 px-4 py-3 flex gap-1">
+			<div className="w-full flex-shrink-0 bg-[rgba(28,28,28,0.95)] backdrop-blur-[20px]">
+				<div className="flex gap-1 border-white/15 border-t px-4 py-3">
 					<Button
-						variant="ghost"
-						size="default"
+						className="min-h-9 flex-1 rounded-3xl border-0 bg-white/10 px-3 py-2 font-medium text-sm text-white transition-all duration-200 hover:bg-white/20 hover:text-white"
 						onClick={onTurnOff}
-						className="flex-1 px-3 py-2 min-h-9 bg-white/10 hover:bg-white/20 
-                       rounded-3xl text-white text-sm font-medium transition-all duration-200
-                       border-0 hover:text-white"
+						size="default"
+						variant="ghost"
 					>
 						Turn Off
 					</Button>

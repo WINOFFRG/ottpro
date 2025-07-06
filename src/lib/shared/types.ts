@@ -26,6 +26,7 @@ export interface AppRule {
   name: string;
   enabled: boolean;
   description: string;
+  middleware: Middleware;
 }
 
 export interface AppHandler {
@@ -36,5 +37,4 @@ export interface AppHandler {
   rules: AppRule[];
   setupBackgroundRules?: () => Promise<Browser.declarativeNetRequest.Rule[]>; // Returns declarative net request rules
   handleBackgroundRequest?: (details: any) => boolean | void; // Handle request monitoring, return true if handled
-  middlewares: Middleware[];
 }

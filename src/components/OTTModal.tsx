@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { OTTModalHeader } from "./OTTModalHeader";
 import { OTTModalFooter } from "./OTTModalFooter";
-import { RuleSection } from "./RuleSection";
+import { OTTModalHeader } from "./OTTModalHeader";
 import { RuleItem } from "./RuleItem";
+import { RuleSection } from "./RuleSection";
 import { SocialSection } from "./SocialSection";
 
 interface OTTModalProps {
@@ -63,13 +63,9 @@ export function OTTModal({ root }: OTTModalProps) {
 
 	return (
 		<div
-			className={`fixed right-3 top-3 w-[278px] ${
+			className={`fixed top-3 right-3 w-[278px] ${
 				isLogsDrawerOpen ? "max-h-[90vh]" : "max-h-[calc(100vh-300px)]"
-			} pointer-events-auto
-                 z-[9999999] bg-neutral-800 backdrop-blur-[40px] rounded-3xl 
-                 border border-white/10 shadow-[0px_0px_28px_0px_rgba(0,0,0,0.5)]
-                 animate-in slide-in-from-right-2 fade-in
-                 flex flex-col isolate transform-gpu overflow-hidden transition-all duration-300`}
+			} slide-in-from-right-2 fade-in pointer-events-auto isolate z-[9999999] flex transform-gpu animate-in flex-col overflow-hidden rounded-3xl border border-white/10 bg-neutral-800 shadow-[0px_0px_28px_0px_rgba(0,0,0,0.5)] backdrop-blur-[40px] transition-all duration-300`}
 			style={{
 				transition:
 					"box-shadow 0.2s, opacity 0.2s, transform 0.2s, max-height 0.3s",
@@ -78,13 +74,13 @@ export function OTTModal({ root }: OTTModalProps) {
 			}}
 		>
 			<OTTModalHeader
+				onClose={handleClose}
 				providerName={providerInfo.name}
 				version={providerInfo.version}
-				onClose={handleClose}
 			/>
 
 			<div
-				className="flex-1 overflow-y-auto px-0 min-h-0"
+				className="min-h-0 flex-1 overflow-y-auto px-0"
 				style={{
 					msScrollChaining: "none",
 					overscrollBehavior: "contain",
@@ -95,16 +91,16 @@ export function OTTModal({ root }: OTTModalProps) {
 				{provider !== "unknown" && (
 					<RuleSection title="Rules">
 						<RuleItem
-							title="Enable 4K"
 							description="Force maximum quality streaming up to 4K resolution"
+							title="Enable 4K"
 						/>
 						<RuleItem
-							title="Skip Intro"
 							description="Automatically skip intro sequences"
+							title="Skip Intro"
 						/>
 						<RuleItem
-							title="Auto Next Episode"
 							description="Automatically play next episode without countdown"
+							title="Auto Next Episode"
 						/>
 					</RuleSection>
 				)}
