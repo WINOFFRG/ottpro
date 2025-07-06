@@ -1,73 +1,74 @@
 import ReactDOM from "react-dom/client";
-import React, { useState } from "react";
 import type { ContentScriptContext } from "#imports";
 import App from "@/components/App";
 
 import "@/assets/global.css";
 
+const ModalRootTagName = "ott-pro-ui";
+
 export default defineContentScript({
-  matches: [
-    "*://*.hotstar.com/*",
-    "*://*.netflix.com/*",
-    "*://*.winoffrg.dev/*",
-  ],
-  runAt: "document_start",
-  cssInjectionMode: "ui",
-  async main(ctx) {
-    await injectScript("/script.js", {
-      keepInDom: true,
-    });
+	matches: [
+		"*://*.hotstar.com/*",
+		"*://*.netflix.com/*",
+		"*://*.winoffrg.dev/*",
+	],
+	runAt: "document_start",
+	cssInjectionMode: "ui",
+	async main(ctx) {
+		const isDev = import.meta.env.MODE === "development";
 
-    const ui = await createUi(ctx);
+		await injectScript("/script.js", {
+			keepInDom: isDev,
+		});
 
-    browser.runtime.onMessage.addListener((event) => {
-      if (event.type === "MOUNT_UI") {
-        console.log(ui, ui.mounted);
+		const ui = await createUi(ctx);
 
-        if (!ui.mounted) {
-          ui.mount();
-        } else {
-          ui.autoMount();
-        }
-      }
-    });
+		browser.runtime.onMessage.addListener((event) => {
+			if (event.type === "MOUNT_UI") {
+				if (ui.mounted) {
+					ui.autoMount();
+				} else {
+					ui.mount();
+				}
+			}
+		});
 
-    if (import.meta.env.MODE === "development") {
-      document.addEventListener("DOMContentLoaded", () => {
-        ui.mount();
-      });
-    }
+		if (isDev) {
+			document.addEventListener("DOMContentLoaded", () => {
+				ui.mount();
+			});
+		}
 
-    document.addEventListener("mousedown", (e) => {
-      if (e.target !== document.getElementsByTagName("ott-pro-ui")?.[0]) {
-        ui.shadowHost.remove();
-      }
-    });
-  },
+		document.addEventListener("mousedown", (e) => {
+			if (e.target !== document.getElementsByTagName(ModalRootTagName)?.[0]) {
+				ui.shadowHost.remove();
+			}
+		});
+	},
 });
 
 function createUi(ctx: ContentScriptContext) {
-  let root: ReactDOM.Root | null = null;
+	let root: ReactDOM.Root | null = null;
 
-  return createShadowRootUi(ctx, {
-    name: "ott-pro-ui",
-    position: "overlay",
-    anchor: "body",
-    append: "last",
-    onRemove: (root: ReactDOM.Root | undefined) => {
-      root?.unmount();
-    },
-    alignment: "top-right",
-    zIndex: 999999,
-    isolateEvents: true,
-    inheritStyles: false,
-    onMount: (uiContainer, shadow, shadowHost) => {
-      if (!root) {
-        root = ReactDOM.createRoot(uiContainer);
-        root.render(<App root={shadowHost} />);
-      }
+	return createShadowRootUi(ctx, {
+		name: ModalRootTagName,
+		position: "overlay",
+		anchor: "body",
+		append: "last",
+		onRemove: (rootElement: ReactDOM.Root | undefined) => {
+			rootElement?.unmount();
+		},
+		alignment: "top-right",
+		zIndex: 999_999,
+		isolateEvents: true,
+		inheritStyles: false,
+		onMount: (uiContainer, _, shadowHost) => {
+			if (!root) {
+				root = ReactDOM.createRoot(uiContainer);
+				root.render(<App root={shadowHost} />);
+			}
 
-      return root;
-    },
-  });
+			return root;
+		},
+	});
 }

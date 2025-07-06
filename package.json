@@ -18,10 +18,10 @@
     "changeset": "changeset",
     "version": "changeset version",
     "release": "changeset publish",
-    "postinstall": "wxt prepare",
     "web:dev": "vite"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.0.6",
     "@changesets/cli": "^2.26.2",
     "@tailwindcss/vite": "^4.1.11",
     "@types/react": "^19.1.8",
@@ -39,6 +39,7 @@
     "tailwindcss": "^4.1.11",
     "tw-animate-css": "^1.3.5",
     "typescript": "^5.8.3",
+    "ultracite": "5.0.32",
     "wxt": "^0.20.7"
   },
   "dependencies": {
