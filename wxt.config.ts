@@ -21,6 +21,16 @@ export default defineConfig({
       "*://*.netflix.com/*",
       "*://*.winoffrg.dev/*",
     ],
+    web_accessible_resources: [
+      {
+        resources: ["script.js"],
+        matches: [
+          "*://*.hotstar.com/*",
+          "*://*.netflix.com/*",
+          "*://*.winoffrg.dev/*",
+        ],
+      },
+    ],
     permissions: [
       "scripting",
       "declarativeNetRequest",
@@ -35,6 +45,7 @@ export default defineConfig({
       "--start-maximized",
     ],
     keepProfileChanges: true,
+    startUrls: ["https://www.netflix.com/"],
   },
   dev: {
     reloadCommand: "Ctrl+Shift+X",
