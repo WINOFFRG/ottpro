@@ -1,13 +1,13 @@
-import { appHandlers } from "@/lib/apps/registry";
 import { fetchApiPolyfill } from "@/lib/fetch-pollyfill";
 import type { Middleware } from "@/lib/shared/middleware";
-import type { AppHandler } from "@/lib/shared/types";
+import type { AppConfig } from "@/lib/shared/types";
+import { appStorage } from "@/lib/storage";
 
-function isDomainMatch(currentDomain: string, appDomain: string): boolean {
-  return currentDomain.includes(appDomain);
+function isDomainMatch(currentDomain: string, domainPattern: RegExp): boolean {
+  return domainPattern.test(currentDomain);
 }
 
-function collectMiddlewaresFromApp(app: AppHandler): Middleware[] {
+function collectMiddlewaresFromApp(app: AppConfig): Middleware[] {
   const middlewares: Middleware[] = [];
 
   if (!app.rules || app.rules.length === 0) {
@@ -27,27 +27,28 @@ function collectMiddlewaresFromApp(app: AppHandler): Middleware[] {
   return middlewares;
 }
 
-function collectAllMiddlewares(): Middleware[] {
+async function collectAllMiddlewares(): Promise<Middleware[]> {
   const middlewares: Middleware[] = [];
   const currentDomain = window.location.hostname;
 
-  for (const app of appHandlers) {
+  // Get storage-backed app configs
+  const storageAppConfigs = await appStorage.getAllAppConfigs();
+
+  for (const app of storageAppConfigs) {
     if (!app.enabled) {
       console.log(`⏭️  Skipping disabled app: ${app.name}`);
       continue;
     }
 
-    console.log(`🔍 Processing app: ${app.name}`);
-
-    if (!isDomainMatch(currentDomain, app.domain)) {
+    if (!isDomainMatch(currentDomain, app.domainPattern)) {
       console.log(
-        `⏭️  Domain mismatch for ${app.name}: ${currentDomain} doesn't match ${app.domain}`
+        `⏭️  Domain mismatch for ${app.name}: ${currentDomain} doesn't match ${app.domainPattern}`
       );
       continue;
     }
 
     console.log(
-      `✅ Domain match for ${app.name}: ${currentDomain} matches ${app.domain}`
+      `✅ Domain match for ${app.name}: ${currentDomain} matches ${app.domainPattern}`
     );
 
     const appMiddlewares = collectMiddlewaresFromApp(app);
@@ -57,15 +58,31 @@ function collectAllMiddlewares(): Middleware[] {
   return middlewares;
 }
 
+async function initializeExtension() {
+  console.log("🚀 Initializing extension...");
+
+  // Initialize storage defaults on first run
+  // await appStorage.initializeDefaults();
+
+  // Collect and apply middlewares based on current storage state
+  const middlewares = await collectAllMiddlewares();
+
+  if (middlewares.length > 0) {
+    console.log(`🔧 Applying ${middlewares.length} middlewares`);
+    fetchApiPolyfill(middlewares);
+  } else {
+    console.log("⚠️  No middlewares to apply for current domain and settings");
+  }
+
+  console.log("✅ Extension initialization complete");
+}
+
 export default defineUnlistedScript(() => {
   console.log("🚀 Initializing script for:", window.location.href);
 
-  const middlewares = collectAllMiddlewares();
-  console.log(`🎯 Total middlewares collected: ${middlewares.length}`);
-
-  if (middlewares.length > 0) {
-    fetchApiPolyfill(middlewares);
-  } else {
-    console.log("⏭️  No middlewares found, skipping fetch polyfill setup");
-  }
+  // Initialize when script loads - no need for storage watchers since app is static
+  // Real-time updates are handled in the UI layer
+  initializeExtension().catch((error) => {
+    console.error("❌ Failed to initialize extension:", error);
+  });
 });

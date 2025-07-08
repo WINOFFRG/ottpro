@@ -7,21 +7,24 @@ import {
 	CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { Switch } from "@/components/ui/switch";
+import { useRootStore, useRuleEnabled, useToggleRule } from "../hooks/useStore";
 
 interface RuleItemProps {
 	title: string;
 	description?: string;
-	enabled?: boolean;
-	onChange?: (enabled: boolean) => void;
 }
 
-export function RuleItem({
-	title,
-	description,
-	enabled = false,
-	onChange,
-}: RuleItemProps) {
+export function RuleItem({ title, description }: RuleItemProps) {
 	const [isExpanded, setIsExpanded] = useState(false);
+	const currentApp = useRootStore((state) => state.currentApp);
+	const toggleRule = useToggleRule();
+	const isEnabled = useRuleEnabled(currentApp?.id || "", title);
+
+	const handleToggle = async () => {
+		if (currentApp) {
+			await toggleRule(currentApp.id, title);
+		}
+	};
 
 	return (
 		<Collapsible onOpenChange={setIsExpanded} open={isExpanded}>
@@ -41,15 +44,17 @@ export function RuleItem({
 								/>
 							</Button>
 						</CollapsibleTrigger>
-						<p className="m-0 font-normal text-base text-white">{title}</p>
+						<p className="m-0 font-normal text-sm text-white">{title}</p>
 					</div>
-
-					<Switch className="relative h-6 w-10 cursor-pointer rounded-full border-2 border-white/10 p-1 shadow-none transition-all duration-200 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=checked]:border-transparent data-[state=checked]:bg-white/30 data-[state=unchecked]:bg-transparent" />
+					<Switch
+						checked={isEnabled}
+						className="relative h-6 w-10 cursor-pointer rounded-full border-2 border-white/10 p-1 shadow-none transition-all duration-200 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=checked]:border-transparent data-[state=checked]:bg-white/30 data-[state=unchecked]:bg-transparent"
+						onCheckedChange={handleToggle}
+					/>
 				</div>
-
 				{description && (
 					<CollapsibleContent className="slide-in-from-top-2 fade-in animate-in duration-200">
-						<p className="m-0 pl-1 text-white/60 text-xs leading-relaxed">
+						<p className="m-0 pl-1 text-white/60 text-xs leading-tight">
 							{description}
 						</p>
 					</CollapsibleContent>

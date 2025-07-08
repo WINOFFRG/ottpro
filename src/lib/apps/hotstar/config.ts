@@ -1,11 +1,11 @@
-import type { AppHandler } from "../../shared/types";
+import type { AppConfig } from "../../shared/types";
 import { blockAds } from "./block-ads";
 import { hotstarHeaderMiddleware } from "./middleware";
 
-export const hotstarHandler: AppHandler = {
+export const config: AppConfig = {
   id: "hotstar",
   name: "Disney+ Hotstar",
-  domain: "hotstar.com",
+  domainPattern: /(^|\.)hotstar\.com$/,
   enabled: true,
   rules: [
     {

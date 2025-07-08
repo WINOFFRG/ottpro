@@ -1,10 +1,10 @@
-import type { AppHandler } from "@/lib/shared/types";
+import type { AppConfig } from "@/lib/shared/types";
 import { bypassAccountSharing } from "./bypass-account-sharing";
 
-export const netflixHandler: AppHandler = {
+export const config: AppConfig = {
   id: "netflix",
   name: "Netflix",
-  domain: "netflix.com",
+  domainPattern: /(^|\.)netflix\.com$/,
   enabled: true,
   rules: [
     {

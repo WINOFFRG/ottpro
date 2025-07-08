@@ -1,5 +1,6 @@
 import tailwindcss from "@tailwindcss/vite";
 import Obfusticator from "rollup-plugin-obfuscator";
+import shadowDomCss from "vite-plugin-shadow-dom-css";
 import { defineConfig } from "wxt";
 import packageJson from "./package.json" with { type: "json" };
 
@@ -45,14 +46,17 @@ export default defineConfig({
 			"--start-maximized",
 		],
 		keepProfileChanges: true,
-		startUrls: ["https://www.netflix.com/"],
+		startUrls: ["https://winoffrg.dev/"],
 	},
 	dev: {
 		reloadCommand: "Ctrl+Shift+X",
 	},
 	modules: ["@wxt-dev/module-react", "@wxt-dev/auto-icons"],
 	vite: (config) => ({
-		plugins: [config.command === "serve" ? [] : Obfusticator(), tailwindcss()],
+		plugins: [
+			config.command === "serve" ? [] : Obfusticator(),
+			tailwindcss(),
+		],
 		build: {
 			sourcemap: true,
 		},

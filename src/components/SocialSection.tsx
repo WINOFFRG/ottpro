@@ -2,35 +2,35 @@ import { ChevronRight } from "lucide-react";
 
 export function SocialSection() {
 	return (
-		<div className="border-t border-white/10 px-4 py-4 flex flex-col gap-2">
-			<p className="text-white/60 text-xs font-medium m-0">Support</p>
+		<div className="flex flex-col gap-2 border-white/10 border-t px-4 py-4">
+			<p className="m-0 font-medium text-white/60 text-xs">Support</p>
 			<div className="flex flex-col gap-1">
 				<a
+					className="group flex items-center justify-between rounded px-2 py-1 transition-colors hover:bg-white/5"
 					href="#"
-					className="flex items-center justify-between px-2 py-1 hover:bg-white/5 rounded transition-colors group"
 				>
-					<p className="text-white text-base font-medium m-0 group-hover:text-white/80 transition-colors">
+					<p className="m-0 font-medium text-base text-white transition-colors group-hover:text-white/80">
 						Join Discord
 					</p>
-					<ChevronRight className="w-[18px] h-[18px] text-white/60 group-hover:text-white/80 transition-colors" />
+					<ChevronRight className="h-[18px] w-[18px] text-white/60 transition-colors group-hover:text-white/80" />
 				</a>
 				<a
+					className="group flex items-center justify-between rounded px-2 py-1 transition-colors hover:bg-white/5"
 					href="#"
-					className="flex items-center justify-between px-2 py-1 hover:bg-white/5 rounded transition-colors group"
 				>
-					<p className="text-white text-base font-medium m-0 group-hover:text-white/80 transition-colors">
+					<p className="m-0 font-medium text-base text-white transition-colors group-hover:text-white/80">
 						Donate
 					</p>
-					<ChevronRight className="w-[18px] h-[18px] text-white/60 group-hover:text-white/80 transition-colors" />
+					<ChevronRight className="h-[18px] w-[18px] text-white/60 transition-colors group-hover:text-white/80" />
 				</a>
 				<a
+					className="group flex items-center justify-between rounded px-2 py-1 transition-colors hover:bg-white/5"
 					href="#"
-					className="flex items-center justify-between px-2 py-1 hover:bg-white/5 rounded transition-colors group"
 				>
-					<p className="text-white text-base font-medium m-0 group-hover:text-white/80 transition-colors">
+					<p className="m-0 font-medium text-base text-white transition-colors group-hover:text-white/80">
 						Rate Us
 					</p>
-					<ChevronRight className="w-[18px] h-[18px] text-white/60 group-hover:text-white/80 transition-colors" />
+					<ChevronRight className="h-[18px] w-[18px] text-white/60 transition-colors group-hover:text-white/80" />
 				</a>
 			</div>
 		</div>

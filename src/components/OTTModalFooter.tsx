@@ -1,4 +1,4 @@
-import React from "react";
+import { Suspense } from "react";
 import { cn } from "../lib/utils";
 import { Button } from "./ui/button";
 import {
@@ -9,11 +9,7 @@ import {
 	DrawerTrigger,
 } from "./ui/drawer";
 
-interface OTTModalFooterProps {
-	onTurnOff: () => void;
-}
-
-export function OTTModalFooter({ onTurnOff }: OTTModalFooterProps) {
+export function OTTModalFooter() {
 	const sampleLogs = [
 		{
 			timestamp: "14:30:22",
@@ -77,82 +73,79 @@ export function OTTModalFooter({ onTurnOff }: OTTModalFooterProps) {
 		},
 	];
 
+	const getLogLevelStyles = (level: string) => {
+		if (level === "INFO") {
+			return "bg-blue-500/20 text-blue-300";
+		}
+		if (level === "DEBUG") {
+			return "bg-gray-500/20 text-gray-300";
+		}
+		return "bg-red-500/20 text-red-300";
+	};
+
 	return (
-		<>
-			<div className="w-full flex-shrink-0 bg-[rgba(28,28,28,0.95)] backdrop-blur-[20px]">
-				<div className="flex gap-1 border-white/15 border-t px-4 py-3">
-					<Button
-						className="min-h-9 flex-1 rounded-3xl border-0 bg-white/10 px-3 py-2 font-medium text-sm text-white transition-all duration-200 hover:bg-white/20 hover:text-white"
-						onClick={onTurnOff}
-						size="default"
-						variant="ghost"
-					>
-						Turn Off
-					</Button>
-					{/* <DrawerTrigger asChild>
-            <Button
-              variant="ghost"
-              size="default"
-              className="flex-1 px-3 py-2 min-h-9 bg-white/10 hover:bg-white/20 
-            rounded-3xl text-white text-sm font-medium transition-all duration-200
-            border-0 hover:text-white"
-            >
-              Logs
-            </Button>
-          </DrawerTrigger> */}
-				</div>
+		<div className="w-full flex-shrink-0 bg-[rgba(28,28,28,0.95)] backdrop-blur-[20px]">
+			<div className="flex gap-1 border-white/15 border-t px-4 py-3">
+				<Button
+					className="min-h-9 flex-1 rounded-3xl border-0 bg-white/10 px-3 py-2 font-medium text-sm text-white transition-all duration-200 hover:bg-white/20 hover:text-white"
+					// onClick={onTurnOff}
+					size="default"
+					variant="ghost"
+				>
+					Turn Off
+				</Button>
+				<Suspense fallback={<div>Loading...</div>}>
+					<Drawer>
+						<DrawerTrigger>
+							<Button
+								asChild
+								className="min-h-9 flex-1 rounded-3xl border-0 bg-white/10 px-3 py-2 font-medium text-sm text-white transition-all duration-200 hover:bg-white/20 hover:text-white"
+								size="default"
+								variant="ghost"
+							>
+								Logs
+							</Button>
+						</DrawerTrigger>
+						<DrawerContent
+							className={cn(
+								"rounded-3xl border-white/15 border-t bg-[rgba(28,28,28,0.99)] text-white backdrop-blur-lg"
+							)}
+						>
+							<div className="mx-auto mt-2 h-1.5 w-[60px] shrink-0 rounded-full bg-white/20" />
+							<DrawerHeader className="flex-shrink-0 px-4 py-2">
+								<DrawerTitle className="font-medium text-sm text-white">
+									Extension Logs
+								</DrawerTitle>
+							</DrawerHeader>
+
+							<div className="flex flex-1 flex-col overflow-hidden px-4 pb-4">
+								<div className="flex h-full max-h-[42vh] flex-col gap-1 overflow-y-auto overscroll-contain">
+									{sampleLogs.map((log) => (
+										<div
+											className="@container flex flex-col gap-2 rounded-md border border-white/10 bg-white/5 p-2"
+											key={`${log.timestamp}-${log.message}`}
+										>
+											<div className="flex flex-row items-center gap-2">
+												<span className="w-12 flex-shrink-0 font-mono text-[10px] text-white/50">
+													{log.timestamp}
+												</span>
+												<span
+													className={`flex-shrink-0 rounded-full px-1.5 py-0.5 font-medium text-[9px] ${getLogLevelStyles(log.level)}`}
+												>
+													{log.level}
+												</span>
+											</div>
+											<span className="min-w-0 flex-1 @[300px]:break-words text-[11px] text-white/80">
+												{log.message}
+											</span>
+										</div>
+									))}
+								</div>
+							</div>
+						</DrawerContent>
+					</Drawer>
+				</Suspense>
 			</div>
-
-			{/* <Drawer direction="bottom">
-        <DrawerContent
-          data-slot="drawer-content"
-          className={cn(
-            "group/drawer-content bg-background absolute inset-0 z-50 flex h-auto flex-col",
-            "data-[vaul-drawer-direction=bottom]:inset-x-0 data-[vaul-drawer-direction=bottom]:bottom-0 data-[vaul-drawer-direction=bottom]:rounded-t-lg data-[vaul-drawer-direction=bottom]:border-t",
-            "bg-[rgba(28,28,28,0.98)] backdrop-blur-[20px] border-t border-white/15 text-white rounded-3xl"
-          )}
-        >
-          <div className="bg-muted mx-auto mt-4 hidden h-2 w-[100px] shrink-0 rounded-full group-data-[vaul-drawer-direction=bottom]/drawer-content:block" />
-          <DrawerHeader className="pb-2">
-            <div className="flex items-center justify-between">
-              <DrawerTitle className="text-white font-medium text-sm">
-                Extension Logs
-              </DrawerTitle>
-            </div>
-          </DrawerHeader>
-
-          <div className="flex-1 overflow-y-auto p-2 min-h-0">
-            <div className="space-y-1">
-              {sampleLogs.map((log, index) => (
-                <div
-                  key={index}
-                  className="flex gap-2 p-2 rounded-md bg-white/5 border border-white/10 flex-col"
-                >
-                  <div className="flex items-center gap-2 flex-row">
-                    <span className="text-[10px] text-white/50 font-mono flex-shrink-0 w-12">
-                      {log.timestamp}
-                    </span>
-                    <span
-                      className={`text-[9px] font-medium px-1.5 py-0.5 rounded-full flex-shrink-0 ${
-                        log.level === "INFO"
-                          ? "bg-blue-500/20 text-blue-300"
-                          : log.level === "DEBUG"
-                          ? "bg-gray-500/20 text-gray-300"
-                          : "bg-red-500/20 text-red-300"
-                      }`}
-                    >
-                      {log.level}
-                    </span>
-                  </div>
-                  <span className="text-[11px] text-white/80 flex-1 min-w-0 truncate">
-                    {log.message}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </DrawerContent>
-      </Drawer> */}
-		</>
+		</div>
 	);
 }

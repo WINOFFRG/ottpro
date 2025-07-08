@@ -19,7 +19,7 @@ export interface SharedContext {
   logLevel: keyof LogLevel;
   enabledApps: Set<string>;
   updateStats: (appId: string, action: "blocked" | "modified") => void;
-  log: (level: keyof LogLevel, message: string, data?: any) => void;
+  log: (level: keyof LogLevel, message: string, data?: unknown) => void;
 }
 
 export interface AppRule {
@@ -29,12 +29,10 @@ export interface AppRule {
   middleware: Middleware;
 }
 
-export interface AppHandler {
+export interface AppConfig {
   id: string;
   name: string;
-  domain: string;
+  domainPattern: RegExp;
   enabled: boolean;
   rules: AppRule[];
-  setupBackgroundRules?: () => Promise<Browser.declarativeNetRequest.Rule[]>; // Returns declarative net request rules
-  handleBackgroundRequest?: (details: any) => boolean | void; // Handle request monitoring, return true if handled
 }

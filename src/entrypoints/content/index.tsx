@@ -3,6 +3,7 @@ import type { ContentScriptContext } from "#imports";
 import App from "@/components/App";
 
 import "@/assets/global.css";
+import { appStorage } from "@/lib/storage";
 
 const ModalRootTagName = "ott-pro-ui";
 
@@ -47,25 +48,32 @@ export default defineContentScript({
 	},
 });
 
-function createUi(ctx: ContentScriptContext) {
+async function createUi(ctx: ContentScriptContext) {
 	let root: ReactDOM.Root | null = null;
+
+	// Get storage-backed app config instead of static config
+	const currentDomain = window.location.hostname;
+	const allAppConfigs = await appStorage.getAllAppConfigs();
+	const app = allAppConfigs.find(
+		(config) => config.enabled && config.domainPattern.test(currentDomain)
+	);
 
 	return createShadowRootUi(ctx, {
 		name: ModalRootTagName,
 		position: "overlay",
 		anchor: "body",
-		append: "last",
+		append: "before",
 		onRemove: (rootElement: ReactDOM.Root | undefined) => {
 			rootElement?.unmount();
 		},
 		alignment: "top-right",
 		zIndex: 999_999,
 		isolateEvents: true,
-		inheritStyles: false,
+		inheritStyles: true,
 		onMount: (uiContainer, _, shadowHost) => {
 			if (!root) {
 				root = ReactDOM.createRoot(uiContainer);
-				root.render(<App root={shadowHost} />);
+				root.render(<App app={app} root={shadowHost} />);
 			}
 
 			return root;
