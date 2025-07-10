@@ -1,5 +1,5 @@
 import { useAppEnabled, useRootStore, useToggleApp } from "../hooks/useStore";
-import { OTTModalFooter } from "./OTTModalFooter";
+// import { OTTModalFooter } from "./OTTModalFooter";
 import { OTTModalHeader } from "./OTTModalHeader";
 import { RuleItem } from "./RuleItem";
 import { RuleSection } from "./RuleSection";
@@ -76,7 +76,7 @@ export function OTTModal() {
 
 				<SocialSection />
 			</div>
-			<OTTModalFooter />
+			{/* <OTTModalFooter /> */}
 		</div>
 	);
 }

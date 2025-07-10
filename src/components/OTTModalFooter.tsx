@@ -10,68 +10,7 @@ import {
 } from "./ui/drawer";
 
 export function OTTModalFooter() {
-	const sampleLogs = [
-		{
-			timestamp: "14:30:22",
-			level: "INFO",
-			message: "Extension initialized successfully",
-		},
-		{
-			timestamp: "14:30:25",
-			level: "DEBUG",
-			message: "Detected Netflix player",
-		},
-		{
-			timestamp: "14:30:28",
-			level: "INFO",
-			message: "Applied playback speed: 1.25x",
-		},
-		{
-			timestamp: "14:30:31",
-			level: "DEBUG",
-			message: "Skipped intro: 15 seconds",
-		},
-		{
-			timestamp: "14:30:35",
-			level: "INFO",
-			message: "Auto-next episode enabled",
-		},
-		{
-			timestamp: "14:30:38",
-			level: "DEBUG",
-			message: "Volume normalized to 80%",
-		},
-		{
-			timestamp: "14:30:42",
-			level: "INFO",
-			message: "Quality changed to 1080p",
-		},
-		{
-			timestamp: "14:30:45",
-			level: "DEBUG",
-			message: "Subtitle track changed: English",
-		},
-		{
-			timestamp: "14:30:48",
-			level: "INFO",
-			message: "Blocked advertisements: 3",
-		},
-		{
-			timestamp: "14:30:51",
-			level: "DEBUG",
-			message: "Enhanced audio quality applied",
-		},
-		{
-			timestamp: "14:30:54",
-			level: "INFO",
-			message: "Custom UI themes loaded",
-		},
-		{
-			timestamp: "14:30:57",
-			level: "DEBUG",
-			message: "Performance optimizations active",
-		},
-	];
+	const sampleLogs = [];
 
 	const getLogLevelStyles = (level: string) => {
 		if (level === "INFO") {
@@ -86,14 +25,14 @@ export function OTTModalFooter() {
 	return (
 		<div className="w-full flex-shrink-0 bg-[rgba(28,28,28,0.95)] backdrop-blur-[20px]">
 			<div className="flex gap-1 border-white/15 border-t px-4 py-3">
-				<Button
+				{/* <Button
 					className="min-h-9 flex-1 rounded-3xl border-0 bg-white/10 px-3 py-2 font-medium text-sm text-white transition-all duration-200 hover:bg-white/20 hover:text-white"
 					// onClick={onTurnOff}
 					size="default"
 					variant="ghost"
 				>
 					Turn Off
-				</Button>
+				</Button> */}
 				<Suspense fallback={<div>Loading...</div>}>
 					<Drawer>
 						<DrawerTrigger>

@@ -26,11 +26,7 @@ export default defineContentScript({
 
 		browser.runtime.onMessage.addListener((event) => {
 			if (event.type === "MOUNT_UI") {
-				if (ui.mounted) {
-					ui.autoMount();
-				} else {
-					ui.mount();
-				}
+				ui.mount();
 			}
 		});
 
@@ -55,9 +51,8 @@ async function createUi(ctx: ContentScriptContext) {
 	const allAppConfigs = await sendMessage(
 		StorageMessageType.GET_ALL_APP_CONFIGS
 	);
-	const app = allAppConfigs.find(
-		(config) =>
-			config.enabled && new RegExp(config.domainPattern).test(currentDomain)
+	const app = allAppConfigs.find((config) =>
+		new RegExp(config.domainPattern).test(currentDomain)
 	);
 
 	return createShadowRootUi(ctx, {
