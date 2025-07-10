@@ -33,9 +33,6 @@ export default defineConfig({
 			},
 		],
 		permissions: [
-			"scripting",
-			"declarativeNetRequest",
-			"webRequest",
 			"storage",
 		],
 	},
@@ -61,6 +58,7 @@ export default defineConfig({
 			sourcemap: true,
 		},
 	}),
+
 	zip: {
 		artifactTemplate: "{{name}}-{{browser}}-{{version}}.zip",
 	},

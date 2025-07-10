@@ -63,11 +63,8 @@
     "@radix-ui/react-separator": "^1.1.7",
     "@radix-ui/react-slot": "^1.2.3",
     "@radix-ui/react-switch": "^1.2.5",
-    "zustand": "^5.0.6"
-  },
-  "dependencies": {
-    "@webext-core/messaging": "^2.3.0",
-    "webext-bridge": "^6.0.1"
+    "zustand": "^5.0.6",
+    "@webext-core/messaging": "^2.3.0"
   },
   "trustedDependencies": [
     "@tailwindcss/oxide",
