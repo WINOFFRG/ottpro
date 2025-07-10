@@ -3,7 +3,7 @@ import type { ContentScriptContext } from "#imports";
 import App from "@/components/App";
 
 import "@/assets/global.css";
-import { appStorage } from "@/lib/storage";
+import { StorageMessageType, sendMessage } from "@/lib/messaging";
 
 const ModalRootTagName = "ott-pro-ui";
 
@@ -34,11 +34,11 @@ export default defineContentScript({
 			}
 		});
 
-		// if (isDev) {
-		document.addEventListener("DOMContentLoaded", () => {
-			ui.mount();
-		});
-		// }
+		if (isDev) {
+			document.addEventListener("DOMContentLoaded", () => {
+				ui.mount();
+			});
+		}
 
 		document.addEventListener("mousedown", (e) => {
 			if (e.target !== document.getElementsByTagName(ModalRootTagName)?.[0]) {
@@ -51,11 +51,13 @@ export default defineContentScript({
 async function createUi(ctx: ContentScriptContext) {
 	let root: ReactDOM.Root | null = null;
 
-	// Get storage-backed app config instead of static config
 	const currentDomain = window.location.hostname;
-	const allAppConfigs = await appStorage.getAllAppConfigs();
+	const allAppConfigs = await sendMessage(
+		StorageMessageType.GET_ALL_APP_CONFIGS
+	);
 	const app = allAppConfigs.find(
-		(config) => config.enabled && config.domainPattern.test(currentDomain)
+		(config) =>
+			config.enabled && new RegExp(config.domainPattern).test(currentDomain)
 	);
 
 	return createShadowRootUi(ctx, {

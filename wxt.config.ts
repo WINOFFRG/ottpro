@@ -1,6 +1,5 @@
 import tailwindcss from "@tailwindcss/vite";
 import Obfusticator from "rollup-plugin-obfuscator";
-import shadowDomCss from "vite-plugin-shadow-dom-css";
 import { defineConfig } from "wxt";
 import packageJson from "./package.json" with { type: "json" };
 
@@ -11,14 +10,15 @@ export default defineConfig({
 	manifestVersion: 3,
 	manifest: {
 		action: {},
+		author: {
+			email: "rohangupta1528@gmail.com",
+		},
 		version: packageJson.version,
-		name: "Hotstar WiWiWi",
-		description: "Patches hotstar to use with freedom",
+		name: packageJson.name,
+		description: packageJson.description,
 		host_permissions: [
 			"*://*.hotstar.com/*",
 			"*://*.hesads.akamaized.net/*",
-			"*://*.bifrost-api.hotstar.com/*",
-			"*://service.hotstar.com/*",
 			"*://*.netflix.com/*",
 			"*://*.winoffrg.dev/*",
 		],

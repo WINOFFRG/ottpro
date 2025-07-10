@@ -1,17 +1,11 @@
-import type { Middleware } from "./middleware";
+import type { LogLevel } from "@/lib/logger";
+import type { Middleware } from "@/lib/shared/middleware";
 
 export interface AppStats {
   appId: string;
   blocked: number;
   modified: number;
   total: number;
-}
-
-export interface LogLevel {
-  ERROR: "error";
-  WARN: "warn";
-  INFO: "info";
-  DEBUG: "debug";
 }
 
 export interface SharedContext {
@@ -23,6 +17,7 @@ export interface SharedContext {
 }
 
 export interface AppRule {
+  id: string;
   name: string;
   enabled: boolean;
   description: string;
@@ -32,7 +27,7 @@ export interface AppRule {
 export interface AppConfig {
   id: string;
   name: string;
-  domainPattern: RegExp;
+  domainPattern: string;
   enabled: boolean;
   rules: AppRule[];
 }

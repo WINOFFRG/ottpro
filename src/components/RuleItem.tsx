@@ -10,19 +10,20 @@ import { Switch } from "@/components/ui/switch";
 import { useRootStore, useRuleEnabled, useToggleRule } from "../hooks/useStore";
 
 interface RuleItemProps {
+	ruleId: string;
 	title: string;
 	description?: string;
 }
 
-export function RuleItem({ title, description }: RuleItemProps) {
+export function RuleItem({ ruleId, title, description }: RuleItemProps) {
 	const [isExpanded, setIsExpanded] = useState(false);
 	const currentApp = useRootStore((state) => state.currentApp);
 	const toggleRule = useToggleRule();
-	const isEnabled = useRuleEnabled(currentApp?.id || "", title);
+	const isEnabled = useRuleEnabled(currentApp?.id || "", ruleId);
 
 	const handleToggle = async () => {
 		if (currentApp) {
-			await toggleRule(currentApp.id, title);
+			await toggleRule(currentApp.id, ruleId);
 		}
 	};
 

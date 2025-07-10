@@ -17,8 +17,6 @@ export function OTTModal() {
 		}
 	};
 
-	console.log(">> browser.runtime.onMessage", browser.runtime);
-
 	return (
 		<div
 			className={
@@ -41,7 +39,6 @@ export function OTTModal() {
 			>
 				{currentApp && (
 					<>
-						{/* App-level toggle */}
 						<div className="border-white/10 border-b px-4 py-3">
 							<div className="flex items-center justify-between">
 								<div className="min-w-0 flex-1">
@@ -52,23 +49,23 @@ export function OTTModal() {
 										Master switch for all features
 									</p>
 								</div>
-								<div className="ml-3 flex-shrink-0">
+								<div className="">
 									<Switch
 										aria-label={`Toggle ${currentApp.name}`}
 										checked={isAppEnabled}
+										className="relative h-6 w-10 cursor-pointer rounded-full border-2 border-white/10 p-1 shadow-none transition-all duration-200 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=checked]:border-transparent data-[state=checked]:bg-white/30 data-[state=unchecked]:bg-transparent"
 										onCheckedChange={handleAppToggle}
 									/>
 								</div>
 							</div>
 						</div>
-
-						{/* Rules section - only show if app is enabled */}
 						{isAppEnabled && currentApp.rules?.length > 0 && (
 							<RuleSection title="Rules">
 								{currentApp.rules.map((rule) => (
 									<RuleItem
 										description={rule.description}
-										key={rule.name}
+										key={rule.id}
+										ruleId={rule.id}
 										title={rule.name}
 									/>
 								))}

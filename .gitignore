@@ -25,3 +25,7 @@ web-ext.config.ts
 *.sln
 *.sw?
 dist
+
+src/lib/apps/*
+!src/lib/apps/netflix
+!src/lib/apps/registry.ts

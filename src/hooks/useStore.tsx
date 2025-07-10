@@ -7,8 +7,8 @@ import {
 } from "react";
 import { useStore } from "zustand";
 import { createStore } from "zustand/vanilla";
+import { StorageMessageType, sendMessage } from "@/lib/messaging";
 import type { AppConfig } from "@/lib/shared/types";
-import { appStorage, setAppEnabled, setRuleEnabled } from "@/lib/storage";
 
 export interface RootState {
 	root: HTMLElement | null;
@@ -20,7 +20,7 @@ export interface RootState {
 
 export interface RootActions {
 	toggleApp: (appId: string) => Promise<void>;
-	toggleRule: (appId: string, ruleName: string) => Promise<void>;
+	toggleRule: (appId: string, ruleId: string) => Promise<void>;
 	updateFromStorage: (
 		appId: string,
 		appEnabled: boolean,
@@ -47,22 +47,27 @@ export const createRootStore = (initState: RootState = defaultInitState) => {
 			const currentState = appStates.get(appId) ?? true;
 			const newState = !currentState;
 
-			// Update storage
-			await setAppEnabled(appId, newState);
+			await sendMessage(StorageMessageType.SET_APP_ENABLED, {
+				appId,
+				enabled: newState,
+			});
 
-			// Update local state
 			const newAppStates = new Map(appStates);
 			newAppStates.set(appId, newState);
 			set({ appStates: newAppStates });
 		},
 
-		toggleRule: async (appId: string, ruleName: string) => {
+		toggleRule: async (appId: string, ruleId: string) => {
 			const { ruleStates } = get();
-			const ruleKey = `${appId}:${ruleName}`;
+			const ruleKey = `${appId}:${ruleId}`;
 			const currentState = ruleStates.get(ruleKey) ?? true;
 			const newState = !currentState;
 
-			await setRuleEnabled(appId, ruleName, newState);
+			await sendMessage(StorageMessageType.SET_RULE_ENABLED, {
+				appId,
+				ruleId,
+				enabled: newState,
+			});
 
 			const newRuleStates = new Map(ruleStates);
 			newRuleStates.set(ruleKey, newState);
@@ -93,7 +98,9 @@ export const createRootStore = (initState: RootState = defaultInitState) => {
 
 		initializeFromStorage: async () => {
 			try {
-				const appConfigs = await appStorage.getAllAppConfigs();
+				const appConfigs = await sendMessage(
+					StorageMessageType.GET_ALL_APP_CONFIGS
+				);
 
 				const newAppStates = new Map<string, boolean>();
 				const newRuleStates = new Map<string, boolean>();
@@ -102,7 +109,7 @@ export const createRootStore = (initState: RootState = defaultInitState) => {
 					newAppStates.set(app.id, app.enabled);
 
 					for (const rule of app.rules) {
-						const ruleKey = `${app.id}:${rule.name}`;
+						const ruleKey = `${app.id}:${rule.id}`;
 						newRuleStates.set(ruleKey, rule.enabled);
 					}
 				}
@@ -135,78 +142,64 @@ export const RootStoreProvider = ({
 		storeRef.current = createRootStore(initialState);
 	}
 
-	// Set up storage watchers and initialization for the current app only
 	useEffect(() => {
 		const store = storeRef.current;
 		if (!store) {
 			return;
 		}
 
-		// Initialize from storage
+		// Initialize from storage via background script
 		store.getState().initializeFromStorage();
 
-		// Set up watchers only for the current app (since app never changes in content script)
-		const { currentApp } = store.getState();
-		if (currentApp) {
-			console.log(`📡 Setting up storage watchers for app: ${currentApp.name}`);
+		// Listen for storage change broadcasts from background script
+		const messageListener = (message: {
+			type: string;
+			data: Record<string, unknown>;
+		}) => {
+			if (message.type === StorageMessageType.STORAGE_CHANGED) {
+				const { ruleStates, appStates } = store.getState();
 
-			// Watch app enabled state
-			const appUnwatch = appStorage.watchAppEnabled(
-				currentApp.id,
-				(enabled) => {
+				if (
+					"appId" in message.data &&
+					"enabled" in message.data &&
+					!("ruleId" in message.data)
+				) {
+					// App enabled change
+					const appId = message.data.appId as string;
+					const enabled = message.data.enabled as boolean;
 					console.log(
-						`🔄 App ${currentApp.name} enabled state changed to:`,
-						enabled
+						`🔄 Received app change broadcast: ${appId} = ${enabled}`
 					);
-
-					// Update rule states from storage
-					const ruleStates = new Map<string, boolean>();
-					Promise.all(
-						currentApp.rules.map(async (rule) => {
-							const ruleKey = `${currentApp.id}:${rule.name}`;
-							const ruleEnabled = await appStorage.getRuleEnabled(
-								currentApp.id,
-								rule.name
-							);
-							ruleStates.set(ruleKey, ruleEnabled);
-						})
-					).then(() => {
-						store
-							.getState()
-							.updateFromStorage(currentApp.id, enabled, ruleStates);
-					});
-				}
-			);
-
-			// Watch individual rule states
-			const ruleUnwatchers = currentApp.rules.map((rule) =>
-				appStorage.watchRuleEnabled(currentApp.id, rule.name, (enabled) => {
+					const appRuleStates = new Map<string, boolean>();
+					store.getState().updateFromStorage(appId, enabled, appRuleStates);
+				} else if (
+					"appId" in message.data &&
+					"ruleId" in message.data &&
+					"enabled" in message.data
+				) {
+					// Rule enabled change
+					const appId = message.data.appId as string;
+					const ruleId = message.data.ruleId as string;
+					const enabled = message.data.enabled as boolean;
 					console.log(
-						`🔄 Rule ${rule.name} enabled state changed to:`,
-						enabled
+						`🔄 Received rule change broadcast: ${appId}:${ruleId} = ${enabled}`
 					);
-					const { ruleStates } = store.getState();
 					const newRuleStates = new Map(ruleStates);
-					const ruleKey = `${currentApp.id}:${rule.name}`;
+					const ruleKey = `${appId}:${ruleId}`;
 					newRuleStates.set(ruleKey, enabled);
 
-					// Get current app state
-					const appEnabled =
-						store.getState().appStates.get(currentApp.id) ?? true;
-					store
-						.getState()
-						.updateFromStorage(currentApp.id, appEnabled, newRuleStates);
-				})
-			);
-
-			return () => {
-				appUnwatch();
-				for (const unwatch of ruleUnwatchers) {
-					unwatch();
+					const appEnabled = appStates.get(appId) ?? true;
+					store.getState().updateFromStorage(appId, appEnabled, newRuleStates);
 				}
-			};
-		}
-	}, []); // Empty dependency array since currentApp never changes
+			}
+		};
+
+		browser.runtime.onMessage.addListener(messageListener);
+
+		return () => {
+			browser.runtime.onMessage.removeListener(messageListener);
+		};
+	}, []);
 
 	return (
 		<RootStoreContext.Provider value={storeRef.current}>
@@ -216,25 +209,20 @@ export const RootStoreProvider = ({
 };
 
 export const useRootStore = <T,>(selector: (store: RootStore) => T): T => {
-	const rootStoreContext = useContext(RootStoreContext);
-
-	if (!rootStoreContext) {
-		throw new Error("useRootStore must be used within RootStoreProvider");
+	const store = useContext(RootStoreContext);
+	if (!store) {
+		throw new Error("Missing RootStoreProvider");
 	}
-
-	return useStore(rootStoreContext, selector);
+	return useStore(store, selector);
 };
 
-// Utility hooks for easier access to storage-backed state
 export const useAppEnabled = (appId: string): boolean => {
 	return useRootStore((state) => state.appStates.get(appId) ?? true);
 };
 
-export const useRuleEnabled = (appId: string, ruleName: string): boolean => {
-	return useRootStore((state) => {
-		const ruleKey = `${appId}:${ruleName}`;
-		return state.ruleStates.get(ruleKey) ?? true;
-	});
+export const useRuleEnabled = (appId: string, ruleId: string): boolean => {
+	const ruleKey = `${appId}:${ruleId}`;
+	return useRootStore((state) => state.ruleStates.get(ruleKey) ?? true);
 };
 
 export const useToggleApp = () => {

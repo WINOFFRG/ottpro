@@ -1,11 +1,11 @@
-import { defineAppConfig } from "#imports";
+import type { LogLevel } from "@/lib/logger";
 
 declare module "wxt/utils/define-app-config" {
   export interface WxtAppConfig {
-    theme?: "light" | "dark";
+    defaultLogLevel: LogLevel;
   }
 }
 
 export default defineAppConfig({
-  theme: "dark",
+  defaultLogLevel: import.meta.env.MODE === "development" ? 0 : 1,
 });

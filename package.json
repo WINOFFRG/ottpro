@@ -1,9 +1,27 @@
 {
   "name": "OTTPRO",
-  "description": "Patches hotstar to use with freedom",
-  "private": true,
-  "version": "0.0.0",
+  "description": "Patches for OTT platforms to binge with freedom!",
+  "version": "0.1.0",
   "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/winoffrg/ottpro.git"
+  },
+  "bugs": {
+    "url": "https://github.com/winoffrg/ottpro/issues"
+  },
+  "homepage": "https://ottpro.winoffrg.dev/",
+  "author": "Rohan Gupta <rohangupta1528@gmail.com>",
+  "keywords": [
+    "OTT",
+    "streaming",
+    "patch",
+    "extension",
+    "binge",
+    "netflix",
+    "blocking"
+  ],
   "engines": {
     "bun": ">=1.0.0"
   },
@@ -47,7 +65,10 @@
     "@radix-ui/react-switch": "^1.2.5",
     "zustand": "^5.0.6"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@webext-core/messaging": "^2.3.0",
+    "webext-bridge": "^6.0.1"
+  },
   "trustedDependencies": [
     "@tailwindcss/oxide",
     "javascript-obfuscator",

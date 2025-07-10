@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import type { Middleware } from "@/lib/shared/middleware";
 
 export const bypassAccountSharing: Middleware = async (ctx, next) => {
@@ -6,12 +7,11 @@ export const bypassAccountSharing: Middleware = async (ctx, next) => {
     return;
   }
 
-  let body: any;
+  let body: string | undefined;
+
   if (ctx.init?.body) {
     if (typeof ctx.init.body === "string") {
       body = ctx.init.body;
-    } else if (ctx.init.body instanceof FormData) {
-      // skip
     } else {
       body = JSON.stringify(ctx.init.body);
     }
@@ -30,10 +30,17 @@ export const bypassAccountSharing: Middleware = async (ctx, next) => {
       if (targetOps.includes(parsed.operationName)) {
         shouldBlock = true;
       }
-    } catch {}
+    } catch {
+      logger.error("Failed to parse body", { body });
+    }
   }
 
   if (shouldBlock) {
+    logger.info(`Blocking request ${ctx.url}`, {
+      source: "netflix",
+      middleware: "bypass-account-sharing",
+    });
+
     ctx.setHandled();
     ctx.setResponse(
       new Response(JSON.stringify({}), {

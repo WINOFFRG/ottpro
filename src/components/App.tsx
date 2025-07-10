@@ -9,9 +9,8 @@ function AppContent() {
 	);
 
 	useEffect(() => {
-		// Initialize from storage on mount
 		initializeFromStorage();
-	}, [initializeFromStorage]);
+	}, []);
 
 	return <OTTModal />;
 }

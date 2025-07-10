@@ -37,7 +37,6 @@ export class MemoryTransport implements LogTransport {
   log(entry: LogEntry): void {
     this.logs.push(entry);
 
-    // Keep only the most recent logs
     if (this.logs.length > this.maxLogs) {
       this.logs = this.logs.slice(-this.maxLogs);
     }
@@ -70,7 +69,6 @@ export class LocalStorageTransport implements LogTransport {
       const existingLogs = this.getLogs();
       existingLogs.push(entry);
 
-      // Keep only the most recent logs
       const logsToStore = existingLogs.slice(-this.maxLogs);
 
       localStorage.setItem(this.storageKey, JSON.stringify(logsToStore));
@@ -241,7 +239,6 @@ export class Logger {
       source: this.source,
     };
 
-    // Send to all transports in parallel
     const transportPromises = this.transports.map(async (transport) => {
       try {
         await transport.log(entry);
@@ -335,10 +332,11 @@ export class Logger {
  * Create a default logger instance
  */
 export function createLogger(source?: string): Logger {
+  const { defaultLogLevel } = useAppConfig();
   return new Logger(source)
     .addTransport(new ConsoleTransport())
     .addTransport(new MemoryTransport())
-    .setLevel(LogLevel.INFO);
+    .setLevel(defaultLogLevel);
 }
 
 /**
