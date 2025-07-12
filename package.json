@@ -2,6 +2,7 @@
   "name": "OTTPRO",
   "description": "Patches for OTT platforms to binge with freedom!",
   "version": "0.1.0",
+  "private": true,
   "type": "module",
   "license": "MIT",
   "repository": {
@@ -35,8 +36,7 @@
     "compile": "tsc --noEmit",
     "changeset": "changeset",
     "version": "changeset version",
-    "release": "changeset publish",
-    "web:dev": "vite"
+    "release": "changeset tag"
   },
   "devDependencies": {
     "@biomejs/biome": "2.1.1",

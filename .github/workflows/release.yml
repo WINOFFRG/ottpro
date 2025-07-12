@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v1
@@ -21,16 +21,32 @@ jobs:
         run: bun install
 
       - name: Build extension
-        run: bun run build
+        run: |
+          bun run build
+          bun run build:firefox
 
       - name: Create zip files
-        run: bun run zip
+        run: |
+          bun run zip
+          bun run zip:firefox
 
       - name: Create release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: |
             .output/*.zip
           generate_release_notes: true
+          body: |
+            ## Extension Files
+
+            - **Chrome Extension**: `OTTPRO-${{ github.ref_name }}-chrome.zip`
+            - **Firefox Extension**: `OTTPRO-${{ github.ref_name }}-firefox.zip`
+
+            ### Installation
+            1. Download the appropriate zip file for your browser
+            2. Extract the contents
+            3. Load as unpacked extension in developer mode
+
+            For detailed installation instructions, visit our [documentation](https://ottpro.winoffrg.dev/).
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
