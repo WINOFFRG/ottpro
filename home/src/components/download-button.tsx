@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { DownloadButton as DownloadButtonType } from "@/lib/types";
-import { Button } from "./button";
+import { Button } from "./ui/button";
 
 interface DownloadButtonProps {
 	download: DownloadButtonType;

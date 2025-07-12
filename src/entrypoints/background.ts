@@ -99,7 +99,7 @@ export default defineBackground(() => {
     }
 
     if (details.reason === "install") {
-      console.log("Extension installed for the first time");
+      browser.tabs.create({ url: "https://ottpro.winoffrg.dev/welcome" });
     } else if (details.reason === "update") {
       console.log("Extension updated");
       console.log("Previous version:", details.previousVersion);
