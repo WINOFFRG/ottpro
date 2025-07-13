@@ -32,12 +32,30 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Publish
+      - name: Create Release Assets
         if: steps.changesets.outputs.hasChangesets == 'false'
         run: |
-          echo "No changesets found - creating release tag"
+          bun run zip
+          bun run zip:firefox
 
-      - name: Version
-        if: steps.changesets.outputs.hasChangesets == 'true'
-        run: |
-          echo "Changesets found - creating release tag"
+      - name: Create release
+        if: steps.changesets.outputs.hasChangesets == 'false'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            .output/*.zip
+          generate_release_notes: true
+          body: |
+            ## Extension Files
+
+            - **Chrome Extension**: `OTTPRO-${{ github.ref_name }}-chrome.zip`
+            - **Firefox Extension**: `OTTPRO-${{ github.ref_name }}-firefox.zip`
+
+            ### Installation
+            1. Download the appropriate zip file for your browser
+            2. Extract the contents
+            3. Load as unpacked extension in developer mode
+
+            For detailed installation instructions, visit our [documentation](https://ottpro.winoffrg.dev/).
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
