@@ -35,20 +35,25 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Create Release Assets
+      - name: Create Release Assets with Versioning
+        id: version
         if: steps.changesets.outputs.published == 'true'
         run: |
-          echo ${{ steps.changesets.outputs.publishedPackages[0].version }}
+          PACKAGES='${{ steps.changesets.outputs.publishedPackages }}'
+          ERSION=$(echo "$PACKAGES" | jq -r '.[] | select(.name == "OTTPRO") | .version')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "OTTPRO version: $VERSION"
           bun run zip
-          # bun run zip:firefox
+          bun run zip:firefox
 
       - name: Create release
         if: steps.changesets.outputs.published == 'true'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ steps.changesets.outputs.publishedPackages[0].version }}
+          tag_name: v${{ steps.version.outputs.version }}
           files: |
-            .dist/ottpro-*.zip
+            .dist/ottpro-firefox-*.zip
+            .dist/ottpro-chrome-*.zip
           generate_release_notes: true
           append_body: true
           body: |
