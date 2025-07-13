@@ -1,5 +1,7 @@
 # OTTPRO Browser Extension
 
+![Banner ](./assets/github_banner.png)
+
 ### <u>Your force field against OTT restrictions - Binge with freedom!</u>
 
 This extension provides patches for various OTT apps like Netflix, Hulu and many more. Go to the respective OTT website and click on the extension icon from tool bar to explore the list of available patches. By default all patches are applied 🎉

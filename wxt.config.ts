@@ -54,7 +54,8 @@ export default defineConfig({
 			tailwindcss(),
 		],
 		build: {
-			sourcemap: true,
+			sourcemap: config.command === "serve",
 		},
 	}),
+	publicDir: "src/public",
 });
