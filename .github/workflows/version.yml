@@ -31,3 +31,13 @@ jobs:
           title: "chore: version packages"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish
+        if: steps.changesets.outputs.hasChangesets == 'false'
+        run: |
+          echo "No changesets found - creating release tag"
+
+      - name: Version
+        if: steps.changesets.outputs.hasChangesets == 'true'
+        run: |
+          echo "Changesets found - creating release tag"
