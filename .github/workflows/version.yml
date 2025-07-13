@@ -66,6 +66,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Submit to stores
+        if: steps.changesets.outputs.published == 'true'
         run: |
           bun wxt submit \
             --chrome-zip .output/*-chrome.zip \

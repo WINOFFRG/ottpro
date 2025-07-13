@@ -9,9 +9,6 @@ export default defineConfig({
 	manifestVersion: 3,
 	manifest: {
 		action: {},
-		author: {
-			email: "rohangupta1528@gmail.com",
-		},
 		version: packageJson.version,
 		name: packageJson.name,
 		description: packageJson.description,
@@ -34,6 +31,11 @@ export default defineConfig({
 		permissions: [
 			"storage",
 		],
+		browser_specific_settings: {
+			gecko: {
+				id: "ottpro@winoffrg.dev",
+			},
+		},
 	},
 	webExt: {
 		chromiumArgs: [
