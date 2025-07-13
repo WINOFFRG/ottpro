@@ -52,15 +52,10 @@ jobs:
         with:
           tag_name: ${{ steps.version.outputs.version }}
           files: |
-            .dist/ottpro-firefox-*.zip
-            .dist/ottpro-chrome-*.zip
+            dist/ottpro-firefox-*.zip
+            dist/ottpro-chrome-*.zip
           append_body: true
           body: |
-            ## Extension Files
-
-            - **Chrome Extension**: `OTTPRO-${{ github.ref_name }}-chrome.zip`
-            - **Firefox Extension**: `OTTPRO-${{ github.ref_name }}-firefox.zip`
-
             ### Installation
             1. Download the appropriate zip file for your browser
             2. Extract the contents
