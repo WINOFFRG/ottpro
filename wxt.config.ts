@@ -17,7 +17,7 @@ export default defineConfig({
 		description: packageJson.description,
 		host_permissions: [
 			"*://*.hotstar.com/*",
-			"*://*.hesads.akamaized.net/*",
+			"*://*.akamaized.net/*",
 			"*://*.netflix.com/*",
 			"*://*.winoffrg.dev/*",
 		],
@@ -57,11 +57,4 @@ export default defineConfig({
 			sourcemap: true,
 		},
 	}),
-
-	zip: {
-		artifactTemplate: "{{name}}-{{browser}}-{{version}}.zip",
-	},
-	autoIcons: {
-		grayscaleOnDevelopment: false,
-	},
 });
