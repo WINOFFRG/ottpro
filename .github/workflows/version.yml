@@ -52,8 +52,8 @@ jobs:
         with:
           tag_name: ${{ steps.version.outputs.version }}
           files: |
-            dist/*-firefox-*.zip
-            dist/*-chrome-*.zip
+            .output/*-firefox-*.zip
+            .output/*-chrome-*.zip
           append_body: true
           body: |
             ### Installation

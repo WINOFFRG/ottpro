@@ -5,7 +5,6 @@ import packageJson from "./package.json" with { type: "json" };
 
 // See https://wxt.dev/api/config.html
 export default defineConfig({
-	outDir: "dist",
 	srcDir: "src",
 	manifestVersion: 3,
 	manifest: {
