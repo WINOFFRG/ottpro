@@ -67,7 +67,7 @@ jobs:
 
       - name: Submit to stores
         run: |
-          pnpm wxt submit \
+          bun wxt submit \
             --chrome-zip .output/*-chrome.zip \
             --chrome-skip-submit-review
         env:
