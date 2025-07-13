@@ -40,21 +40,20 @@ jobs:
         if: steps.changesets.outputs.published == 'true'
         run: |
           PACKAGES='${{ steps.changesets.outputs.publishedPackages }}'
-          ERSION=$(echo "$PACKAGES" | jq -r '.[] | select(.name == "OTTPRO") | .version')
+          VERSION=v$(echo "$PACKAGES" | jq -r '.[] | select(.name == "OTTPRO") | .version')
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "OTTPRO version: $VERSION"
           bun run zip
           bun run zip:firefox
+          echo "OTTPRO version: $VERSION"
 
       - name: Create release
         if: steps.changesets.outputs.published == 'true'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ steps.version.outputs.version }}
+          tag_name: ${{ steps.version.outputs.version }}
           files: |
             .dist/ottpro-firefox-*.zip
             .dist/ottpro-chrome-*.zip
-          generate_release_notes: true
           append_body: true
           body: |
             ## Extension Files
