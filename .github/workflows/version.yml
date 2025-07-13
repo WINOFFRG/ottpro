@@ -40,12 +40,14 @@ jobs:
           bun run zip:firefox
 
       - name: Create release
-        if: steps.changesets.outputs.hasChangesets == 'false'
+        # if: steps.changesets.outputs.published == 'true'
         uses: softprops/action-gh-release@v2
         with:
+          tag: v${{ steps.changesets.outputs.publishedPackages[0].version }}
           files: |
             .dist/ottpro-*.zip
           generate_release_notes: true
+          append_body: true
           body: |
             ## Extension Files
 
