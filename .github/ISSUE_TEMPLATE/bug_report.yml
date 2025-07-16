@@ -1,0 +1,111 @@
+name: 🐛 Bug Report
+description: Report a bug or issue with OTTPRO extension
+title: "[Bug]: "
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug! Please fill out this form as completely as possible.
+
+  - type: dropdown
+    id: browser
+    attributes:
+      label: Browser
+      description: Which browser are you using?
+      options:
+        - Chrome
+        - Firefox
+        - Edge
+        - Other Chromium-based
+    validations:
+      required: true
+
+  - type: input
+    id: browser-version
+    attributes:
+      label: Browser Version
+      description: What version of the browser are you using?
+      placeholder: "e.g., 120.0.6099.109"
+    validations:
+      required: true
+
+  - type: input
+    id: extension-version
+    attributes:
+      label: Extension Version
+      description: What version of OTTPRO are you using?
+      placeholder: "e.g., v0.1.0"
+    validations:
+      required: true
+
+  - type: input
+    id: website-url
+    attributes:
+      label: Website URL
+      description: What is the full URL where the issue occurs?
+      placeholder: "e.g., https://www.netflix.com/watch/12345678"
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Describe the bug in detail
+      placeholder: A clear and concise description of what the bug is.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen?
+      placeholder: A clear and concise description of what you expected to happen.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: Steps to Reproduce
+      description: How can we reproduce this issue?
+      placeholder: |
+        1. Go to '...'
+        2. Click on '...'
+        3. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: console-logs
+    attributes:
+      label: Console Logs
+      description: |
+        Please include any relevant console logs. Follow these steps to access browser console:
+
+        **For Windows:**
+        1. Press `F12` OR `Ctrl + Shift + I`
+        2. Click on the **Console** tab in the developer tools
+        3. Look for any red error messages or warnings
+        4. Copy and paste the relevant logs below
+
+        **For Mac:**
+        1. Press `Cmd + Option + I` OR right-click → Inspect
+        2. Click on the **Console** tab in the developer tools  
+        3. Look for any red error messages or warnings
+        4. Copy and paste the relevant logs below
+      render: shell
+
+  - type: textarea
+    id: proof
+    attributes:
+      label: Screenshots or Video Recording
+      description: |
+        Please provide visual proof of the issue:
+        - **Screenshots**: Drag and drop images directly into this text area
+        - **Video Recording**: Upload a screen recording showing the issue (recommended for dynamic problems)
+        - **Multiple angles**: Include browser console, extension popup, and the affected website
+
+        This helps us understand and reproduce the issue faster.
