@@ -19,7 +19,7 @@ export const landingConfig: LandingConfig = {
       id: "firefox",
       platform: "Firefox",
       icon: FirefoxIcon,
-      url: "https://addons.mozilla.org/en-US/firefox/addon/",
+      url: "https://addons.mozilla.org/en-US/firefox/addon/ottpro",
       label: "Get for",
     },
   ],
