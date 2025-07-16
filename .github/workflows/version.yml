@@ -70,7 +70,9 @@ jobs:
         run: |
           bun wxt submit \
             --chrome-zip .output/*-chrome.zip \
-            --chrome-skip-submit-review
+            --chrome-skip-submit-review \
+            --firefox-zip .output/*-firefox.zip \
+            --firefox-sources-zip .output/*-sources.zip
         env:
           CHROME_EXTENSION_ID: ${{ secrets.CHROME_EXTENSION_ID }}
           CHROME_CLIENT_ID: ${{ secrets.CHROME_CLIENT_ID }}
