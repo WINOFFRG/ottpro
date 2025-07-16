@@ -7,12 +7,15 @@
 This extension provides patches for various OTT apps like Netflix, Hulu and many more. Go to the respective OTT website and click on the extension icon from tool bar to explore the list of available patches. By default all patches are applied 🎉
 
 ### 📥 Installation on Chromium browsers (Chrome, Edge, Brave, others)
-[![Download on Chrome](https://img.shields.io/badge/Download-Chrome-D99152?logo=chromewebstore&logoColor=white)](https://chromewebstore.google.com/detail/obbimeepfgnpanehhppdikckhbjcamng)
-[![Chrome Web Store Rating](https://img.shields.io/chrome-web-store/rating/obbimeepfgnpanehhppdikckhbjcamng?logo=reverbnation&logoColor=white&label=Rating&color=AE4095)](https://chromewebstore.google.com/detail/obbimeepfgnpanehhppdikckhbjcamng)
-[![Chrome Web Store Users](https://img.shields.io/chrome-web-store/users/obbimeepfgnpanehhppdikckhbjcamng?color=6937A1&label=Installs&logo=githubsponsors&logoColor=white)](https://chromewebstore.google.com/detail/obbimeepfgnpanehhppdikckhbjcamng)
+[![Download on Chrome](https://img.shields.io/badge/Download-Chrome-8B5DFF?logo=chromewebstore&logoColor=white)](https://chromewebstore.google.com/detail/obbimeepfgnpanehhppdikckhbjcamng)
+[![Chrome Web Store Rating](https://img.shields.io/chrome-web-store/rating/obbimeepfgnpanehhppdikckhbjcamng?logo=reverbnation&logoColor=white&label=Rating&color=FF6464)](https://chromewebstore.google.com/detail/obbimeepfgnpanehhppdikckhbjcamng)
+[![Chrome Web Store Users](https://img.shields.io/chrome-web-store/users/obbimeepfgnpanehhppdikckhbjcamng?color=B5FFD9&label=Installs&logo=githubsponsors&logoColor=white)](https://chromewebstore.google.com/detail/obbimeepfgnpanehhppdikckhbjcamng)
 
 ### 📥 Installation on Firefox Browser
-_Coming Soon_
+[![Download on Firefox](https://img.shields.io/badge/Download-Firefox-B6F500?logo=firefox&logoColor=white)](https://addons.mozilla.org/en-US/firefox/addon/ottpro)
+[![Firefox Add-on Rating](https://img.shields.io/amo/rating/ottpro?logo=reverbnation&logoColor=white&label=Rating&color=FF6464)](https://addons.mozilla.org/en-US/firefox/addon/ottpro)
+[![Firefox Add-on Users](https://img.shields.io/amo/users/ottpro?color=B5FFD9&label=Installs&logo=githubsponsors&logoColor=white)](https://addons.mozilla.org/en-US/firefox/addon/ottpro)
+
 
 ## ✨ Features
 
