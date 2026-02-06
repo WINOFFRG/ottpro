@@ -17,6 +17,9 @@ export default defineConfig({
 			"*://*.akamaized.net/*",
 			"*://*.netflix.com/*",
 			"*://*.winoffrg.dev/*",
+			"*://*.primevideo.com/*",
+			"*://*.unagi-eu.amazon.com/*",
+			"*://*.video.a2z.com/*",
 		],
 		web_accessible_resources: [
 			{
@@ -25,11 +28,13 @@ export default defineConfig({
 					"*://*.hotstar.com/*",
 					"*://*.netflix.com/*",
 					"*://*.winoffrg.dev/*",
+					"*://*.primevideo.com/*",
 				],
 			},
 		],
 		permissions: [
 			"storage",
+			"declarativeNetRequest",
 		],
 		browser_specific_settings: {
 			gecko: {

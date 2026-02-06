@@ -1,5 +1,6 @@
 import { onMessage, StorageMessageType } from "@/lib/messaging";
 import { AppStorageManager } from "@/lib/storage";
+import { syncAllDynamicRules, syncDynamicRule } from "@/lib/dnr-rules";
 
 export default defineBackground(() => {
   const storageManager = new AppStorageManager();
@@ -32,18 +33,15 @@ export default defineBackground(() => {
 
   onMessage(StorageMessageType.GET_RULE_ENABLED, async (message) => {
     const { appId, ruleId } = message.data;
-    console.log("Background: Getting rule enabled state", { appId, ruleId });
     return await storageManager.getRuleEnabled(appId, ruleId);
   });
 
   onMessage(StorageMessageType.SET_RULE_ENABLED, async (message) => {
     const { appId, ruleId, enabled } = message.data;
-    console.log("Background: Setting rule enabled state", {
-      appId,
-      ruleId,
-      enabled,
-    });
+
     await storageManager.setRuleEnabled(appId, ruleId, enabled);
+
+    await syncDynamicRule(appId, ruleId, enabled);
 
     // Broadcast the change to all tabs
     const tabs = await browser.tabs.query({});
@@ -62,7 +60,6 @@ export default defineBackground(() => {
   });
 
   onMessage(StorageMessageType.GET_APP_CONFIG, async (message) => {
-    console.log("Background: Getting app config for", message.data);
     const config = await storageManager.getAppConfig(message.data);
     if (!config) {
       throw new Error(`App config not found for: ${message.data}`);
@@ -86,7 +83,7 @@ export default defineBackground(() => {
       if (tab.id) {
         await browser.tabs.sendMessage(tab.id, { type: "MOUNT_UI" });
       }
-    }
+    },
   );
 
   browser.runtime.onInstalled.addListener(async (details) => {
@@ -94,6 +91,11 @@ export default defineBackground(() => {
       console.log("Background: Initializing defaults...");
       await storageManager.initializeDefaults();
       console.log("Background: Storage initialization complete");
+
+      // Sync all dynamic DNR rules with stored settings
+      await syncAllDynamicRules((appId, ruleId) =>
+        storageManager.getRuleEnabled(appId, ruleId),
+      );
     } catch (error) {
       console.error("Background: Failed to initialize storage:", error);
     }
@@ -106,5 +108,12 @@ export default defineBackground(() => {
     } else if (details.reason === "chrome_update") {
       console.log("Chrome browser updated");
     }
+  });
+
+  // Also sync on browser startup (for when extension is already installed)
+  browser.runtime.onStartup.addListener(async () => {
+    await syncAllDynamicRules((appId, ruleId) =>
+      storageManager.getRuleEnabled(appId, ruleId),
+    );
   });
 });

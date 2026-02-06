@@ -9,35 +9,31 @@ export default defineUnlistedScript(() => {
       return;
     }
 
-    // const config = await sendMessage(
-    //   StorageMessageType.GET_APP_CONFIG,
-    //   staticConfig.id
-    // );
-    if (!staticConfig.enabled) {
+    // Read enabled state from DOM (set by content script from storage)
+    const appEnabled =
+      document.documentElement.dataset.ottProAppEnabled !== "false";
+    const enabledRulesJson =
+      document.documentElement.dataset.ottProEnabledRules;
+    const enabledRuleIds: string[] = enabledRulesJson
+      ? JSON.parse(enabledRulesJson)
+      : [];
+
+    if (!appEnabled) {
       return;
     }
-    // Collect enabled middlewares from rules
+
+    // Collect middlewares for enabled rules only
     const middlewares: Middleware[] = [];
     for (const rule of staticConfig.rules) {
-      if (rule.enabled) {
-        console.log(`Script: Rule ${rule.name} is enabled`);
+      if (enabledRuleIds.includes(rule.id)) {
         middlewares.push(rule.middleware);
       }
     }
 
     if (middlewares.length > 0) {
-      console.log(`Script: Applying ${middlewares.length} middlewares`);
       fetchApiPolyfill(middlewares);
-    } else {
-      console.log("Script: No middlewares to apply");
     }
-    console.log("Script: Configuration applied successfully");
   } catch (error) {
     console.error("Script: Error during execution:", error);
   }
-
-  // onMessage(StorageMessageType.STORAGE_CHANGED, () => {
-  //   console.log("Script: Storage changed, reloading configuration");
-  //   window.location.reload();
-  // });
 });
