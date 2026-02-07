@@ -26,10 +26,7 @@ web-ext.config.ts
 *.sw?
 dist
 
-src/lib/apps/*
-!src/lib/apps/netflix
-!src/lib/apps/primevideo
-!src/lib/apps/registry.ts
+src/lib/apps/hotstar
 
 .next
 node_modules
