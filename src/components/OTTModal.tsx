@@ -6,6 +6,8 @@ import {
   useToggleProductInsights,
 } from "../hooks/useStore";
 import { appConfigs } from "@/lib/apps/registry";
+import { getAppUiConfig, appCardVariants } from "@/lib/apps/ui-config";
+import { HOME_PAGE_DOMAIN } from "@/lib/shared/constants";
 import { ExternalLink } from "lucide-react";
 import { OTTModalHeader } from "./OTTModalHeader";
 import { RuleItem } from "./RuleItem";
@@ -31,21 +33,18 @@ export function OTTModal() {
   };
 
   const currentHost = window.location.hostname;
-  const isHomePage = /(^|\.)winoffrg\.dev$/.test(currentHost);
-  const supportedAppLinks = appConfigs.map((app) => ({
-    id: app.id,
-    name: app.name,
-    brandClassName:
-      app.id === "netflix"
-        ? "border-[#ff6169]/30 bg-[linear-gradient(135deg,rgba(229,9,20,0.22),rgba(122,0,0,0.15))] hover:border-[#ff6169]/50"
-        : app.id === "primevideo"
-        ? "border-[#73d0ff]/35 bg-[linear-gradient(135deg,rgba(15,121,175,0.22),rgba(6,46,97,0.16))] hover:border-[#73d0ff]/55"
-        : "border-white/10 bg-white/[0.03] hover:border-white/20",
-    url:
-      app.id === "primevideo"
-        ? "https://www.primevideo.com/"
-        : `https://www.${app.id}.com/`,
-  }));
+  const isHomePage =
+    currentHost === HOME_PAGE_DOMAIN ||
+    currentHost.endsWith(`.${HOME_PAGE_DOMAIN}`);
+  const supportedAppLinks = appConfigs.map((app) => {
+    const uiConfig = getAppUiConfig(app.id);
+    return {
+      id: app.id,
+      name: app.name,
+      variant: uiConfig.cardVariant,
+      url: uiConfig.url,
+    };
+  });
 
   return (
     <div
@@ -138,7 +137,7 @@ export function OTTModal() {
             <div className="flex flex-col gap-2">
               {supportedAppLinks.map((app) => (
                 <a
-                  className={`group flex items-center justify-between rounded-xl border px-3 py-2 transition-all duration-200 hover:shadow-lg hover:shadow-black/20 ${app.brandClassName}`}
+                  className={appCardVariants({ variant: app.variant })}
                   href={app.url}
                   key={app.id}
                   rel="noopener noreferrer"
@@ -172,7 +171,6 @@ export function OTTModal() {
 
         <SocialSection />
       </div>
-      {/* <OTTModalFooter /> */}
     </div>
   );
 }

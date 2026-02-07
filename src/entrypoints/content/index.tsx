@@ -12,6 +12,11 @@ import {
 import "@/assets/global.css";
 import { StorageMessageType, sendMessage } from "@/lib/messaging";
 
+import {
+  OTT_PRO_APP_ENABLED_KEY,
+  OTT_PRO_ENABLED_RULES_KEY,
+} from "@/lib/shared/constants";
+
 const ModalRootTagName = "ott-pro-ui";
 
 export default defineContentScript({
@@ -38,9 +43,9 @@ export default defineContentScript({
       const enabledRules = currentApp.rules
         .filter((rule) => rule.enabled)
         .map((rule) => rule.id);
-      document.documentElement.dataset.ottProEnabledRules =
+      document.documentElement.dataset[OTT_PRO_ENABLED_RULES_KEY] =
         JSON.stringify(enabledRules);
-      document.documentElement.dataset.ottProAppEnabled = String(
+      document.documentElement.dataset[OTT_PRO_APP_ENABLED_KEY] = String(
         currentApp.enabled,
       );
     }

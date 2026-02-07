@@ -1,5 +1,9 @@
 import { findAppByDomain } from "@/lib/apps/registry";
-import { fetchApiPolyfill } from "@/lib/fetch-pollyfill";
+import { fetchApiPolyfill } from "@/lib/fetch-polyfill";
+import {
+  OTT_PRO_APP_ENABLED_KEY,
+  OTT_PRO_ENABLED_RULES_KEY,
+} from "@/lib/shared/constants";
 
 import type { Middleware } from "@/lib/shared/middleware";
 
@@ -12,9 +16,9 @@ export default defineUnlistedScript(() => {
 
     // Read enabled state from DOM (set by content script from storage)
     const appEnabled =
-      document.documentElement.dataset.ottProAppEnabled !== "false";
+      document.documentElement.dataset[OTT_PRO_APP_ENABLED_KEY] !== "false";
     const enabledRulesJson =
-      document.documentElement.dataset.ottProEnabledRules;
+      document.documentElement.dataset[OTT_PRO_ENABLED_RULES_KEY];
     const enabledRuleIds: string[] = enabledRulesJson
       ? JSON.parse(enabledRulesJson)
       : [];

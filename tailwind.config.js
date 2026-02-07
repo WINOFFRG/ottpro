@@ -23,7 +23,7 @@ function rem2px(input, fontSize = 16) {
     case "string":
       return input.replace(
         remRegex,
-        (_, val) => `${Number.parseFloat(val) * fontSize}px`
+        (_, val) => `${Number.parseFloat(val) * fontSize}px`,
       );
     default:
       return input;
@@ -31,6 +31,7 @@ function rem2px(input, fontSize = 16) {
 }
 
 module.exports = {
+  content: ["./src/**/*.{ts,tsx}"],
   theme: {
     borderRadius: rem2px(defaultTheme.borderRadius),
     spacing: rem2px(defaultTheme.spacing),

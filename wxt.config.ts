@@ -52,7 +52,6 @@ export default defineConfig({
 			"--start-maximized",
 		],
 		keepProfileChanges: true,
-		startUrls: ["https://winoffrg.dev/"],
 	},
 	dev: {
 		reloadCommand: "Ctrl+Shift+X",

@@ -1,6 +1,7 @@
 # OTTPRO Browser Extension
 
-![Banner ](./assets/github_banner.png)
+![Netflix ](./assets/github_banner.png)
+![Prime Video ](./assets/prime_video.png)
 
 ### <u>Your force field against OTT restrictions - Binge with freedom!</u>
 
@@ -21,23 +22,17 @@ This extension provides patches for various OTT apps like Netflix, Hulu and many
 
 1. **Netflix**
    - Bypass household device blocking - Netflix blocks the page by a verification wall which asks you to enter a temporary code valid for 14 days. You can use others account from any location and with this patch you can bypass that wall.
-  
-2. **Coming Soon** 
 
-## 📊 Telemetry (PostHog)
+2. **Prime Video**
+   - Bypass Lite Plan - Enables better playback behavior for Lite plans on desktop.
 
-OTTPRO supports privacy-aware analytics via PostHog with user opt-out control.
+      <video src="./home/public/Prime_Video_Block_Ads.mp4" controls></video>
+   - Block Ads - Blocks ad requests during playback.
 
-Set environment variables before running/building:
+      <video src="./home/public/Prime_Video_Block_TM8.mp4" controls></video>
+   - Block Telemetry - Blocks tracking and analytics requests.
 
-```bash
-VITE_PUBLIC_POSTHOG_KEY=phc_K20rGiWZk0rKDBotmuFA3gx9Zuz0JOLnrpxnWNlmrBT
-VITE_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
-```
-
-Notes:
-- Telemetry is enabled by default and can be turned off in the extension UI (`Privacy` section).
-- When disabled, events and exception capture are stopped.
+      <video src="./home/public/Prime_Video_Bypass_Lite.mp4" controls></video>
 
 ## 🤝 Contributing
 Contributions to this repo and welcome! Please feel free to raise issues, submit pull requests or discuss.

@@ -4,6 +4,8 @@ import { syncAllDynamicRules, syncDynamicRule } from "@/lib/dnr-rules";
 import { logger } from "@/lib/logger";
 import { initPostHog, setProductInsightsEnabled } from "@/lib/posthog";
 
+import { WELCOME_URL } from "@/lib/shared/constants";
+
 export default defineBackground(() => {
   const storageManager = new AppStorageManager();
   storageManager
@@ -82,31 +84,34 @@ export default defineBackground(() => {
     }
   });
 
-  onMessage(StorageMessageType.SET_PRODUCT_INSIGHTS_ENABLED, async (message) => {
-    const { enabled } = message.data;
-    await storageManager.setProductInsightsEnabled(enabled);
-    if (enabled) {
-      initPostHog();
-    }
-    setProductInsightsEnabled(enabled);
-
-    const tabs = await browser.tabs.query({});
-    for (const tab of tabs) {
-      if (tab.id) {
-        browser.tabs
-          .sendMessage(tab.id, {
-            type: StorageMessageType.STORAGE_CHANGED,
-            data: { productInsightsEnabled: enabled },
-          })
-          .catch((error) => {
-            logger.error("Failed to send product insights message to tab", {
-              tabId: tab.id,
-              error,
-            });
-          });
+  onMessage(
+    StorageMessageType.SET_PRODUCT_INSIGHTS_ENABLED,
+    async (message) => {
+      const { enabled } = message.data;
+      await storageManager.setProductInsightsEnabled(enabled);
+      if (enabled) {
+        initPostHog();
       }
-    }
-  });
+      setProductInsightsEnabled(enabled);
+
+      const tabs = await browser.tabs.query({});
+      for (const tab of tabs) {
+        if (tab.id) {
+          browser.tabs
+            .sendMessage(tab.id, {
+              type: StorageMessageType.STORAGE_CHANGED,
+              data: { productInsightsEnabled: enabled },
+            })
+            .catch((error) => {
+              logger.error("Failed to send product insights message to tab", {
+                tabId: tab.id,
+                error,
+              });
+            });
+        }
+      }
+    },
+  );
 
   onMessage(StorageMessageType.GET_APP_CONFIG, async (message) => {
     const config = await storageManager.getAppConfig(message.data);
@@ -148,7 +153,7 @@ export default defineBackground(() => {
     }
 
     if (details.reason === "install") {
-      browser.tabs.create({ url: "https://ottpro.winoffrg.dev/welcome" });
+      browser.tabs.create({ url: WELCOME_URL });
     } else if (details.reason === "update") {
       logger.info("Previous version:", details.previousVersion);
     } else if (details.reason === "chrome_update") {
