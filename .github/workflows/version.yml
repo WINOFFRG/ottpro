@@ -26,10 +26,10 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Preflight build check
+      - name: Build & Zip
         run: |
-          bun run build
-          bun run build:firefox
+          bun run zip
+          bun run zip:firefox
 
       - name: Create Release Pull Request
         id: changesets
@@ -50,8 +50,6 @@ jobs:
           PACKAGES='${{ steps.changesets.outputs.publishedPackages }}'
           VERSION=v$(echo "$PACKAGES" | jq -r '.[] | select(.name == "OTTPRO") | .version')
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-          bun run zip
-          bun run zip:firefox
           echo "OTTPRO version: $VERSION"
 
       - name: Create release
