@@ -1,5 +1,11 @@
 # OTTPRO
 
+## 0.2.1
+
+### Patch Changes
+
+- [`f34c53a`](https://github.com/WINOFFRG/ottpro/commit/f34c53a2c245c21c528dc94d542853a66555ba23) Thanks [@rohangupta-zomato](https://github.com/rohangupta-zomato)! - chore: release version bump
+
 ## 0.2.0
 
 ### Minor Changes
