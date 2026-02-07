@@ -5,42 +5,48 @@ import { Analytics } from "@vercel/analytics/next";
 import { Navigation } from "@/components/navigation";
 
 const geistSans = Geist({
-	variable: "--font-geist-sans",
-	subsets: ["latin"],
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-	title: "OTTPRO — Your force field against OTT restrictions",
-	description:
-		"Patches for OTT platforms to binge with freedom! Bypass account sharing restrictions, block ads, and enhance your streaming experience.",
-	keywords: [
-		"OTT",
-		"streaming",
-		"Netflix",
-		"browser extension",
-		"ad blocker",
-		"account sharing",
-	],
-	robots: {
-		index: true,
-		follow: true,
-	},
+  title: "OTTPRO — Your force field against OTT restrictions",
+  description:
+    "Patches for OTT platforms to binge with freedom! Bypass account sharing restrictions, block ads, and enhance your streaming experience.",
+  keywords: [
+    "OTT",
+    "streaming",
+    "Netflix",
+    "Prime Video",
+    "Block Ads",
+    "Disable Tracking",
+    "Browser extension",
+    "ad blocker",
+    "account sharing",
+    "Mod",
+  ],
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({
-	children,
+  children,
 }: Readonly<{
-	children: React.ReactNode;
+  children: React.ReactNode;
 }>) {
-	return (
-		<html className="dark" lang="en">
-			<body className={`${geistSans.variable} font-sans antialiased`}>
-				<Analytics />
-				<main className="flex min-h-screen flex-col bg-background selection:bg-selection-bg/40">
-					<Navigation />
-					{children}
-				</main>
-			</body>
-		</html>
-	);
+  return (
+    <html className="dark" lang="en">
+      <body
+        className={`${geistSans.variable} font-sans antialiased text-foreground bg-background selection:bg-primary/20`}
+      >
+        <Analytics />
+        <Navigation />
+        <main className="flex min-h-screen flex-col items-center">
+          {children}
+        </main>
+      </body>
+    </html>
+  );
 }
