@@ -4,7 +4,7 @@
 
 ### Minor Changes
 
-- [#8](https://github.com/WINOFFRG/ottpro/pull/8) [`49bc957`](https://github.com/WINOFFRG/ottpro/commit/49bc957150365b8cd25a83932be9f9e802c75095) Thanks [@WINOFFRG](https://github.com/WINOFFRG)! - feat: added prime video plugin
+- [`e794bc9`](https://github.com/WINOFFRG/ottpro/commit/e794bc9bc243e61ad1196a8b70b8e70a0e75cc6d) Thanks [@rohangupta-zomato](https://github.com/rohangupta-zomato)! - feat: added prime video plugin
 
 ## 0.1.2
 
