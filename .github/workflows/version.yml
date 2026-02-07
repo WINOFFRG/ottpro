@@ -26,12 +26,18 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
+      - name: Preflight build check
+        run: |
+          bun run build
+          bun run build:firefox
+
       - name: Create Release Pull Request
         id: changesets
         uses: changesets/action@v1
         with:
           version: bun run version
           publish: bun run release
+          createGithubReleases: false
           commit: "chore: version packages"
           title: "chore: version packages"
         env:
