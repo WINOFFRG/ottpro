@@ -1,5 +1,6 @@
 import { appConfigs } from "@/lib/apps/registry";
 import type { AppConfig } from "@/lib/shared/types";
+import { logger } from "@/lib/logger";
 
 export const createAppStorage = (appId: string) => {
   return storage.defineItem<boolean>(`local:app:${appId}:enabled` as const, {
@@ -14,9 +15,17 @@ export const createRuleStorage = (appId: string, ruleId: string) => {
     {
       fallback: true, // Default to enabled
       version: 1,
-    }
+    },
   );
 };
+
+export const productInsightsStorage = storage.defineItem<boolean>(
+  "local:product-insights:enabled",
+  {
+    fallback: true,
+    version: 1,
+  },
+);
 
 export class AppStorageManager {
   private appStorageItems = new Map<
@@ -51,7 +60,7 @@ export class AppStorageManager {
   async getAppEnabled(appId: string): Promise<boolean> {
     const storageItem = this.appStorageItems.get(appId);
     if (!storageItem) {
-      console.warn(`No storage item found for app: ${appId}`);
+      logger.warn(`No storage item found for app: ${appId}`);
       return true; // Default to enabled
     }
     return await storageItem.getValue();
@@ -60,7 +69,7 @@ export class AppStorageManager {
   async setAppEnabled(appId: string, enabled: boolean): Promise<void> {
     const storageItem = this.appStorageItems.get(appId);
     if (!storageItem) {
-      console.warn(`No storage item found for app: ${appId}`);
+      logger.warn(`No storage item found for app: ${appId}`);
       return;
     }
     await storageItem.setValue(enabled);
@@ -70,7 +79,7 @@ export class AppStorageManager {
     const key = this.getRuleKey(appId, ruleId);
     const storageItem = this.ruleStorageItems.get(key);
     if (!storageItem) {
-      console.warn(`No storage item found for rule: ${key}`);
+      logger.warn(`No storage item found for rule: ${key}`);
       return true; // Default to enabled
     }
     return await storageItem.getValue();
@@ -80,12 +89,12 @@ export class AppStorageManager {
   async setRuleEnabled(
     appId: string,
     ruleId: string,
-    enabled: boolean
+    enabled: boolean,
   ): Promise<void> {
     const key = this.getRuleKey(appId, ruleId);
     const storageItem = this.ruleStorageItems.get(key);
     if (!storageItem) {
-      console.warn(`No storage item found for rule: ${key}`);
+      logger.warn(`No storage item found for rule: ${key}`);
       return;
     }
     await storageItem.setValue(enabled);
@@ -103,7 +112,7 @@ export class AppStorageManager {
       staticConfig.rules.map(async (rule) => ({
         ...rule,
         enabled: await this.getRuleEnabled(appId, rule.id),
-      }))
+      })),
     );
 
     return {
@@ -113,20 +122,28 @@ export class AppStorageManager {
     };
   }
 
+  async getProductInsightsEnabled(): Promise<boolean> {
+    return await productInsightsStorage.getValue();
+  }
+
+  async setProductInsightsEnabled(enabled: boolean): Promise<void> {
+    await productInsightsStorage.setValue(enabled);
+  }
+
   async getAllAppConfigs(): Promise<AppConfig[]> {
     const configs = await Promise.all(
-      appConfigs.map((config) => this.getAppConfig(config.id))
+      appConfigs.map((config) => this.getAppConfig(config.id)),
     );
     return configs.filter(Boolean) as AppConfig[];
   }
 
   watchAppEnabled(
     appId: string,
-    callback: (enabled: boolean) => void
+    callback: (enabled: boolean) => void,
   ): () => void {
     const storageItem = this.appStorageItems.get(appId);
     if (!storageItem) {
-      console.warn(`No storage item found for app: ${appId}`);
+      logger.warn(`No storage item found for app: ${appId}`);
       return () => {};
     }
 
@@ -147,12 +164,12 @@ export class AppStorageManager {
   watchRuleEnabled(
     appId: string,
     ruleId: string,
-    callback: (enabled: boolean) => void
+    callback: (enabled: boolean) => void,
   ): () => void {
     const key = this.getRuleKey(appId, ruleId);
     const storageItem = this.ruleStorageItems.get(key);
     if (!storageItem) {
-      console.warn(`No storage item found for rule: ${key}`);
+      logger.warn(`No storage item found for rule: ${key}`);
       return () => {};
     }
 
@@ -180,7 +197,7 @@ export class AppStorageManager {
   }
 
   async initializeDefaults(): Promise<void> {
-    console.log("🔧 Initializing storage defaults from static configs...");
+    logger.info("🔧 Initializing storage defaults from static configs...");
 
     for (const app of appConfigs) {
       const appStorageItem = this.appStorageItems.get(app.id);
@@ -206,7 +223,7 @@ export class AppStorageManager {
       }
     }
 
-    console.log("✅ Storage defaults initialized");
+    logger.info("✅ Storage defaults initialized");
   }
 }
 export const appStorage = new AppStorageManager();

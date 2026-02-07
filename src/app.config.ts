@@ -12,7 +12,7 @@ declare module "wxt/utils/define-app-config" {
 }
 
 export default defineAppConfig({
-  defaultLogLevel: 0,
+  defaultLogLevel: 1,
   socialLinks: [
     {
       name: "Github",

@@ -17,6 +17,11 @@ export default defineConfig({
 			"*://*.akamaized.net/*",
 			"*://*.netflix.com/*",
 			"*://*.winoffrg.dev/*",
+			"*://*.primevideo.com/*",
+			"*://*.unagi-eu.amazon.com/*",
+			"*://*.video.a2z.com/*",
+			"*://m.media-amazon.com/images/*",
+			"*://*.i.posthog.com/*",
 		],
 		web_accessible_resources: [
 			{
@@ -25,11 +30,14 @@ export default defineConfig({
 					"*://*.hotstar.com/*",
 					"*://*.netflix.com/*",
 					"*://*.winoffrg.dev/*",
+					"*://*.primevideo.com/*",
+					"*://*.i.posthog.com/*",
 				],
 			},
 		],
 		permissions: [
 			"storage",
+			"declarativeNetRequest",
 		],
 		browser_specific_settings: {
 			gecko: {
@@ -44,7 +52,6 @@ export default defineConfig({
 			"--start-maximized",
 		],
 		keepProfileChanges: true,
-		startUrls: ["https://winoffrg.dev/"],
 	},
 	dev: {
 		reloadCommand: "Ctrl+Shift+X",
@@ -52,11 +59,10 @@ export default defineConfig({
 	modules: ["@wxt-dev/module-react", "@wxt-dev/auto-icons"],
 	vite: (config) => ({
 		plugins: [
-			config.command === "serve" ? [] : Obfusticator(),
 			tailwindcss(),
 		],
 		build: {
-			sourcemap: config.command === "serve",
+			sourcemap: true
 		},
 	}),
 	publicDir: "src/public",

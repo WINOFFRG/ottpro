@@ -1,3 +1,9 @@
+import {
+  getPostHog,
+  getPostHogDiagnosticsContext,
+  isProductInsightsEnabled,
+} from "@/lib/posthog";
+
 export const LogLevel = {
   DEBUG: 0,
   INFO: 1,
@@ -97,6 +103,82 @@ export class LocalStorageTransport implements LogTransport {
 }
 
 /**
+ * PostHog transport for analytics and tracing
+ */
+export class PostHogTransport implements LogTransport {
+  name = "posthog";
+
+  log(entry: LogEntry): void {
+    if (!isProductInsightsEnabled()) {
+      return;
+    }
+
+    const posthog = getPostHog();
+    // PostHog might not be initialized yet or might be disabled
+    if (!posthog) return;
+
+    // Map log level to PostHog event level/properties
+    const levelName = this.getLevelName(entry.level);
+    const dataObject =
+      entry.data && typeof entry.data === "object"
+        ? (entry.data as Record<string, unknown>)
+        : undefined;
+    const appIdFromData =
+      typeof dataObject?.app_id === "string"
+        ? dataObject.app_id
+        : typeof dataObject?.appId === "string"
+          ? dataObject.appId
+          : undefined;
+    const diagnosticsContext = getPostHogDiagnosticsContext({
+      app_id: appIdFromData,
+      log_level: levelName,
+      log_message: entry.message,
+      log_source: entry.source,
+      log_data: entry.data,
+      log_timestamp_unix_ms: entry.timestamp,
+    });
+
+    // Send as a generic log event
+    posthog.capture("application_log", {
+      ...diagnosticsContext,
+    });
+
+    // If error, capture as exception or unique error event
+    if (entry.level === LogLevel.ERROR) {
+      const posthogWithException = posthog as typeof posthog & {
+        captureException?: (
+          error: unknown,
+          properties?: Record<string, unknown>,
+        ) => void;
+      };
+
+      if (posthogWithException.captureException) {
+        posthogWithException.captureException(entry.data ?? entry.message, {
+          ...diagnosticsContext,
+        });
+      }
+
+      posthog.capture("application_error", diagnosticsContext);
+    }
+  }
+
+  private getLevelName(level: LogLevel): string {
+    switch (level) {
+      case LogLevel.DEBUG:
+        return "DEBUG";
+      case LogLevel.INFO:
+        return "INFO";
+      case LogLevel.WARN:
+        return "WARN";
+      case LogLevel.ERROR:
+        return "ERROR";
+      default:
+        return "UNKNOWN";
+    }
+  }
+}
+
+/**
  * Console transport for development
  */
 export class ConsoleTransport implements LogTransport {
@@ -108,6 +190,10 @@ export class ConsoleTransport implements LogTransport {
   }
 
   log(entry: LogEntry): void {
+    if (!isProductInsightsEnabled() && entry.level !== LogLevel.ERROR) {
+      return;
+    }
+
     const timestamp = new Date(entry.timestamp).toISOString();
     const source = entry.source ? `[${entry.source}]` : "";
     const message = `${timestamp} ${source} ${entry.message}`;
@@ -119,7 +205,7 @@ export class ConsoleTransport implements LogTransport {
         `%c${this.getLevelName(entry.level)}%c ${message}`,
         `color: ${color}; font-weight: bold`,
         "color: inherit",
-        entry.data || ""
+        entry.data || "",
       );
     } else {
       // Plain console output
@@ -225,7 +311,7 @@ export class Logger {
   private async log(
     level: LogLevel,
     message: string,
-    data?: unknown
+    data?: unknown,
   ): Promise<void> {
     if (level < this.minLevel) {
       return;
@@ -320,6 +406,38 @@ export class Logger {
   /**
    * Create a child logger with a specific source
    */
+  /**
+   * Trace a function execution
+   */
+  async trace<T>(
+    name: string,
+    fn: () => Promise<T> | T,
+    data?: Record<string, unknown>,
+  ): Promise<T> {
+    const startTime = Date.now();
+    try {
+      const result = await fn();
+      const duration = Date.now() - startTime;
+
+      this.info(`Trace: ${name}`, {
+        ...data,
+        duration_ms: duration,
+        status: "success",
+      });
+
+      return result;
+    } catch (error) {
+      const duration = Date.now() - startTime;
+      this.error(`Trace failed: ${name}`, {
+        ...data,
+        duration_ms: duration,
+        status: "error",
+        error,
+      });
+      throw error;
+    }
+  }
+
   child(source: string): Logger {
     const childLogger = new Logger(source);
     childLogger.transports = [...this.transports];
@@ -347,6 +465,7 @@ export function createPersistentLogger(source?: string): Logger {
     .addTransport(new ConsoleTransport())
     .addTransport(new MemoryTransport())
     .addTransport(new LocalStorageTransport())
+    .addTransport(new PostHogTransport())
     .setLevel(LogLevel.INFO);
 }
 

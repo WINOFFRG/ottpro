@@ -1,5 +1,10 @@
 import { findAppByDomain } from "@/lib/apps/registry";
-import { fetchApiPolyfill } from "@/lib/fetch-pollyfill";
+import { fetchApiPolyfill } from "@/lib/fetch-polyfill";
+import {
+  OTT_PRO_APP_ENABLED_KEY,
+  OTT_PRO_ENABLED_RULES_KEY,
+} from "@/lib/shared/constants";
+
 import type { Middleware } from "@/lib/shared/middleware";
 
 export default defineUnlistedScript(() => {
@@ -9,35 +14,36 @@ export default defineUnlistedScript(() => {
       return;
     }
 
-    // const config = await sendMessage(
-    //   StorageMessageType.GET_APP_CONFIG,
-    //   staticConfig.id
-    // );
-    if (!staticConfig.enabled) {
+    // Read enabled state from DOM (set by content script from storage)
+    const appEnabled =
+      document.documentElement.dataset[OTT_PRO_APP_ENABLED_KEY] !== "false";
+    const enabledRulesJson =
+      document.documentElement.dataset[OTT_PRO_ENABLED_RULES_KEY];
+    const enabledRuleIds: string[] = enabledRulesJson
+      ? JSON.parse(enabledRulesJson)
+      : [];
+
+    if (!appEnabled) {
       return;
     }
-    // Collect enabled middlewares from rules
+
     const middlewares: Middleware[] = [];
     for (const rule of staticConfig.rules) {
-      if (rule.enabled) {
-        console.log(`Script: Rule ${rule.name} is enabled`);
+      if (enabledRuleIds.includes(rule.id)) {
         middlewares.push(rule.middleware);
       }
     }
 
-    if (middlewares.length > 0) {
-      console.log(`Script: Applying ${middlewares.length} middlewares`);
-      fetchApiPolyfill(middlewares);
-    } else {
-      console.log("Script: No middlewares to apply");
+    for (const rule of staticConfig.rules) {
+      if (enabledRuleIds.includes(rule.id) && rule.onInit) {
+        rule.onInit();
+      }
     }
-    console.log("Script: Configuration applied successfully");
+
+    if (middlewares.length > 0) {
+      fetchApiPolyfill(middlewares);
+    }
   } catch (error) {
     console.error("Script: Error during execution:", error);
   }
-
-  // onMessage(StorageMessageType.STORAGE_CHANGED, () => {
-  //   console.log("Script: Storage changed, reloading configuration");
-  //   window.location.reload();
-  // });
 });
