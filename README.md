@@ -1,7 +1,9 @@
 # OTTPRO Browser Extension
 
-![Netflix ](./assets/github_banner.png)
-![Prime Video ](./assets/prime_video.png)
+<p float="center">
+  <img src="./assets/github_banner.png" width="49%" />
+  <img src="./assets/prime_video.png" width="49%" /> 
+</p>
 
 ### <u>Your force field against OTT restrictions - Binge with freedom!</u>
 
@@ -21,18 +23,29 @@ This extension provides patches for various OTT apps like Netflix, Hulu and many
 ## ✨ Features
 
 1. **Netflix**
-   - Bypass household device blocking - Netflix blocks the page by a verification wall which asks you to enter a temporary code valid for 14 days. You can use others account from any location and with this patch you can bypass that wall.
+   <details>
+   <summary>Bypass Device Blocking Access Netflix on multiple without Geo Blocking or Email Verification.</summary>
+   </details>
 
 2. **Prime Video**
-   - Bypass Lite Plan - Enables better playback behavior for Lite plans on desktop.
+   <details>
+   <summary>Bypass Lite Plan - Enables better playback behavior for Lite plans on desktop.</summary>
+   &nbsp;
 
-      <video src="./home/public/Prime_Video_Block_Ads.mp4" controls></video>
-   - Block Ads - Blocks ad requests during playback.
+   https://github.com/user-attachments/assets/9051f415-0b7b-4ca1-b928-b2436d173215
+   </details>
+   <details>
+   <summary>Block Ads - Blocks ad requests during playback.</summary>
+   &nbsp;
 
-      <video src="./home/public/Prime_Video_Block_TM8.mp4" controls></video>
-   - Block Telemetry - Blocks tracking and analytics requests.
+   https://github.com/user-attachments/assets/3f4bdf28-41ad-4358-8156-666f0304513e
+   </details>
+   <details>
+   <summary>Block Telemetry - Blocks tracking and analytics requests.</summary>
+   &nbsp;
 
-      <video src="./home/public/Prime_Video_Bypass_Lite.mp4" controls></video>
+   https://github.com/user-attachments/assets/2689278d-cc34-4458-bade-27090124d077
+   </details>
 
 ## 🤝 Contributing
 Contributions to this repo and welcome! Please feel free to raise issues, submit pull requests or discuss.
