@@ -170,12 +170,12 @@ export async function syncDynamicRule(
         // @ts-expect-error - Rule type mismatch between our interface and browser types
         addRules: rules,
       });
-      console.log(`[DNR] Added ${rules.length} rule(s) for ${ruleKey}`);
+      logger.info(`[DNR] Added ${rules.length} rule(s) for ${ruleKey}`);
     } else {
       await browser.declarativeNetRequest.updateDynamicRules({
         removeRuleIds: ruleIds,
       });
-      console.log(`[DNR] Removed ${rules.length} rule(s) for ${ruleKey}`);
+      logger.info(`[DNR] Removed ${rules.length} rule(s) for ${ruleKey}`);
     }
   } catch (error) {
     logger.error(`[DNR] Failed to sync rule ${ruleKey}`, { error });

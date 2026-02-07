@@ -49,12 +49,12 @@ export default defineContentScript({
         ui.mount();
       }
 
-      // if (
-      //   event.type === StorageMessageType.STORAGE_CHANGED &&
-      //   event.data?.ruleId
-      // ) {
-      //   window.location.reload();
-      // }
+      if (
+        event.type === StorageMessageType.STORAGE_CHANGED &&
+        event.data?.ruleId
+      ) {
+        window.location.reload();
+      }
     });
 
     if (isDev) {

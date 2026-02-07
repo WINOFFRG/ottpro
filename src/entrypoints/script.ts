@@ -1,5 +1,6 @@
 import { findAppByDomain } from "@/lib/apps/registry";
 import { fetchApiPolyfill } from "@/lib/fetch-pollyfill";
+
 import type { Middleware } from "@/lib/shared/middleware";
 
 export default defineUnlistedScript(() => {
@@ -22,11 +23,16 @@ export default defineUnlistedScript(() => {
       return;
     }
 
-    // Collect middlewares for enabled rules only
     const middlewares: Middleware[] = [];
     for (const rule of staticConfig.rules) {
       if (enabledRuleIds.includes(rule.id)) {
         middlewares.push(rule.middleware);
+      }
+    }
+
+    for (const rule of staticConfig.rules) {
+      if (enabledRuleIds.includes(rule.id) && rule.onInit) {
+        rule.onInit();
       }
     }
 

@@ -1,7 +1,7 @@
 import type { AppConfig } from "@/lib/shared/types";
 import { blockAds } from "./block-ads";
 import { blockTelemetry } from "./block-telemetry";
-import { bypassLitePlan } from "./bypass-lite-plan";
+import { patchScripts, startScriptTagInterceptor } from "./script-watcher";
 
 /**
  * Prime Video App Configuration
@@ -19,7 +19,10 @@ export const config: AppConfig = {
       name: "Bypass Lite Plan",
       description:
         "With a Lite plan you can watch 1080p FHD content on desktop as well.",
-      middleware: bypassLitePlan,
+      middleware: patchScripts,
+      onInit: () => {
+        startScriptTagInterceptor();
+      },
     },
     {
       id: "block-ads",

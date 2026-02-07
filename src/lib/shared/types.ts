@@ -22,6 +22,7 @@ export interface AppRule {
   enabled: boolean;
   description: string;
   middleware: Middleware;
+  onInit?: () => void;
 }
 
 export interface AppConfig {

@@ -51,6 +51,7 @@ export function fetchApiPolyfill(middlewares: Middleware[] = []) {
         this.response = resp;
       },
       response: undefined,
+      originalFetch: originalFetch.bind(window),
     };
 
     await runMiddlewares(ctx);
@@ -107,6 +108,7 @@ export function fetchApiPolyfill(middlewares: Middleware[] = []) {
           this.response = resp;
         },
         response: undefined,
+        originalFetch: originalFetch.bind(window),
       };
 
       await runMiddlewares(ctx);

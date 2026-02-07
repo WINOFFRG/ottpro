@@ -20,6 +20,7 @@ export default defineConfig({
 			"*://*.primevideo.com/*",
 			"*://*.unagi-eu.amazon.com/*",
 			"*://*.video.a2z.com/*",
+			"*://m.media-amazon.com/images/*",
 		],
 		web_accessible_resources: [
 			{
