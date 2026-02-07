@@ -7,7 +7,7 @@
 
 ### <u>Your force field against OTT restrictions - Binge with freedom!</u>
 
-This extension provides patches for various OTT apps like Netflix, Hulu and many more. Go to the respective OTT website and click on the extension icon from tool bar to explore the list of available patches. By default all patches are applied 🎉
+This extension provides patches for various OTT apps like Netflix, Prime Video, Hotstar and many more. Go to the respective OTT website and click on the extension icon from tool bar to explore the list of available patches. By default all patches are applied 🎉
 
 ### 📥 Installation on Chromium browsers (Chrome, Edge, Brave, others)
 [![Download on Chrome](https://img.shields.io/badge/Download-Chrome-8B5DFF?logo=chromewebstore&logoColor=white)](https://chromewebstore.google.com/detail/obbimeepfgnpanehhppdikckhbjcamng)
