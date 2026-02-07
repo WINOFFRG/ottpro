@@ -1,11 +1,5 @@
 # OTTPRO
 
-## 0.2.0
-
-### Minor Changes
-
-- [`e794bc9`](https://github.com/WINOFFRG/ottpro/commit/e794bc9bc243e61ad1196a8b70b8e70a0e75cc6d) Thanks [@rohangupta-zomato](https://github.com/rohangupta-zomato)! - feat: added prime video plugin
-
 ## 0.1.2
 
 ### Patch Changes
