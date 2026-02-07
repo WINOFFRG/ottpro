@@ -1,6 +1,13 @@
 import ReactDOM from "react-dom/client";
 import type { ContentScriptContext } from "#imports";
 import App from "@/components/App";
+import { PostHogProvider } from "posthog-js/react";
+import {
+  initPostHog,
+  POSTHOG_API_KEY,
+  posthogOptions,
+  setProductInsightsEnabled,
+} from "@/lib/posthog";
 
 import "@/assets/global.css";
 import { StorageMessageType, sendMessage } from "@/lib/messaging";
@@ -75,9 +82,14 @@ async function createUi(ctx: ContentScriptContext) {
   let root: ReactDOM.Root | null = null;
 
   const currentDomain = window.location.hostname;
-  const allAppConfigs = await sendMessage(
-    StorageMessageType.GET_ALL_APP_CONFIGS,
-  );
+  const [allAppConfigs, productInsightsEnabled] = await Promise.all([
+    sendMessage(StorageMessageType.GET_ALL_APP_CONFIGS),
+    sendMessage(StorageMessageType.GET_PRODUCT_INSIGHTS_ENABLED),
+  ]);
+  setProductInsightsEnabled(productInsightsEnabled);
+  if (productInsightsEnabled) {
+    initPostHog();
+  }
   const app = allAppConfigs.find((config) =>
     new RegExp(config.domainPattern).test(currentDomain),
   );
@@ -97,7 +109,15 @@ async function createUi(ctx: ContentScriptContext) {
     onMount: (uiContainer, _, shadowHost) => {
       if (!root) {
         root = ReactDOM.createRoot(uiContainer);
-        root.render(<App app={app} root={shadowHost} />);
+        if (productInsightsEnabled) {
+          root.render(
+            <PostHogProvider apiKey={POSTHOG_API_KEY} options={posthogOptions}>
+              <App app={app} root={shadowHost} />
+            </PostHogProvider>,
+          );
+        } else {
+          root.render(<App app={app} root={shadowHost} />);
+        }
       }
 
       return root;

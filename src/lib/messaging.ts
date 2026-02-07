@@ -6,6 +6,8 @@ export const StorageMessageType = {
   SET_APP_ENABLED: "set-app-enabled",
   GET_RULE_ENABLED: "get-rule-enabled",
   SET_RULE_ENABLED: "set-rule-enabled",
+  GET_PRODUCT_INSIGHTS_ENABLED: "get-product-insights-enabled",
+  SET_PRODUCT_INSIGHTS_ENABLED: "set-product-insights-enabled",
   GET_APP_CONFIG: "get-app-config",
   GET_ALL_APP_CONFIGS: "get-all-app-configs",
   INITIALIZE_DEFAULTS: "initialize-defaults",
@@ -29,13 +31,18 @@ interface ProtocolMap {
     ruleId: string;
     enabled: boolean;
   }) => void;
+  [StorageMessageType.GET_PRODUCT_INSIGHTS_ENABLED]: () => boolean;
+  [StorageMessageType.SET_PRODUCT_INSIGHTS_ENABLED]: (data: {
+    enabled: boolean;
+  }) => void;
   [StorageMessageType.GET_APP_CONFIG]: (appId: string) => AppConfig;
   [StorageMessageType.GET_ALL_APP_CONFIGS]: () => AppConfig[];
   [StorageMessageType.INITIALIZE_DEFAULTS]: () => void;
   [StorageMessageType.STORAGE_CHANGED]: (data: {
     appId?: string;
     ruleId?: string;
-    enabled: boolean;
+    productInsightsEnabled?: boolean;
+    enabled?: boolean;
   }) => void;
   [StorageMessageType.ON_APP_ENABLED_CHANGED]: (data: {
     appId: string;

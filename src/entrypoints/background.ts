@@ -2,9 +2,21 @@ import { onMessage, StorageMessageType } from "@/lib/messaging";
 import { AppStorageManager } from "@/lib/storage";
 import { syncAllDynamicRules, syncDynamicRule } from "@/lib/dnr-rules";
 import { logger } from "@/lib/logger";
+import { initPostHog, setProductInsightsEnabled } from "@/lib/posthog";
 
 export default defineBackground(() => {
   const storageManager = new AppStorageManager();
+  storageManager
+    .getProductInsightsEnabled()
+    .then((enabled) => {
+      if (enabled) {
+        initPostHog();
+      }
+      setProductInsightsEnabled(enabled);
+    })
+    .catch((error) => {
+      logger.error("Failed to load product insights setting", { error });
+    });
 
   onMessage(StorageMessageType.GET_APP_ENABLED, async (message) => {
     logger.debug("Background: Getting app enabled state for", message.data);
@@ -40,6 +52,10 @@ export default defineBackground(() => {
     return await storageManager.getRuleEnabled(appId, ruleId);
   });
 
+  onMessage(StorageMessageType.GET_PRODUCT_INSIGHTS_ENABLED, async () => {
+    return await storageManager.getProductInsightsEnabled();
+  });
+
   onMessage(StorageMessageType.SET_RULE_ENABLED, async (message) => {
     const { appId, ruleId, enabled } = message.data;
 
@@ -58,6 +74,32 @@ export default defineBackground(() => {
           })
           .catch((error) => {
             logger.error("Failed to send message to tab", {
+              tabId: tab.id,
+              error,
+            });
+          });
+      }
+    }
+  });
+
+  onMessage(StorageMessageType.SET_PRODUCT_INSIGHTS_ENABLED, async (message) => {
+    const { enabled } = message.data;
+    await storageManager.setProductInsightsEnabled(enabled);
+    if (enabled) {
+      initPostHog();
+    }
+    setProductInsightsEnabled(enabled);
+
+    const tabs = await browser.tabs.query({});
+    for (const tab of tabs) {
+      if (tab.id) {
+        browser.tabs
+          .sendMessage(tab.id, {
+            type: StorageMessageType.STORAGE_CHANGED,
+            data: { productInsightsEnabled: enabled },
+          })
+          .catch((error) => {
+            logger.error("Failed to send product insights message to tab", {
               tabId: tab.id,
               error,
             });

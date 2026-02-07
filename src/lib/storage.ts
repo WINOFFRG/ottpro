@@ -19,6 +19,14 @@ export const createRuleStorage = (appId: string, ruleId: string) => {
   );
 };
 
+export const productInsightsStorage = storage.defineItem<boolean>(
+  "local:product-insights:enabled",
+  {
+    fallback: true,
+    version: 1,
+  },
+);
+
 export class AppStorageManager {
   private appStorageItems = new Map<
     string,
@@ -112,6 +120,14 @@ export class AppStorageManager {
       enabled: appEnabled,
       rules: rulesWithStorageState,
     };
+  }
+
+  async getProductInsightsEnabled(): Promise<boolean> {
+    return await productInsightsStorage.getValue();
+  }
+
+  async setProductInsightsEnabled(enabled: boolean): Promise<void> {
+    await productInsightsStorage.setValue(enabled);
   }
 
   async getAllAppConfigs(): Promise<AppConfig[]> {

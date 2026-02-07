@@ -9,6 +9,7 @@ import { useStore } from "zustand";
 import { createStore } from "zustand/vanilla";
 import { StorageMessageType, sendMessage } from "@/lib/messaging";
 import { logger } from "@/lib/logger";
+import { setProductInsightsEnabled } from "@/lib/posthog";
 import type { AppConfig } from "@/lib/shared/types";
 
 export interface RootState {
@@ -17,11 +18,14 @@ export interface RootState {
   // Storage-backed app states
   appStates: Map<string, boolean>;
   ruleStates: Map<string, boolean>;
+  productInsightsEnabled: boolean;
 }
 
 export interface RootActions {
   toggleApp: (appId: string) => Promise<void>;
   toggleRule: (appId: string, ruleId: string) => Promise<void>;
+  toggleProductInsights: () => Promise<void>;
+  updateProductInsightsFromStorage: (enabled: boolean) => void;
   updateFromStorage: (
     appId: string,
     appEnabled: boolean,
@@ -37,6 +41,7 @@ export const defaultInitState: RootState = {
   currentApp: undefined,
   appStates: new Map(),
   ruleStates: new Map(),
+  productInsightsEnabled: true,
 };
 
 export const createRootStore = (initState: RootState = defaultInitState) => {
@@ -75,6 +80,23 @@ export const createRootStore = (initState: RootState = defaultInitState) => {
       set({ ruleStates: newRuleStates });
     },
 
+    toggleProductInsights: async () => {
+      const { productInsightsEnabled } = get();
+      const enabled = !productInsightsEnabled;
+
+      await sendMessage(StorageMessageType.SET_PRODUCT_INSIGHTS_ENABLED, {
+        enabled,
+      });
+
+      setProductInsightsEnabled(enabled);
+      set({ productInsightsEnabled: enabled });
+    },
+
+    updateProductInsightsFromStorage: (enabled: boolean) => {
+      setProductInsightsEnabled(enabled);
+      set({ productInsightsEnabled: enabled });
+    },
+
     updateFromStorage: (
       appId: string,
       appEnabled: boolean,
@@ -99,9 +121,10 @@ export const createRootStore = (initState: RootState = defaultInitState) => {
 
     initializeFromStorage: async () => {
       try {
-        const appConfigs = await sendMessage(
-          StorageMessageType.GET_ALL_APP_CONFIGS,
-        );
+        const [appConfigs, productInsightsEnabled] = await Promise.all([
+          sendMessage(StorageMessageType.GET_ALL_APP_CONFIGS),
+          sendMessage(StorageMessageType.GET_PRODUCT_INSIGHTS_ENABLED),
+        ]);
 
         const newAppStates = new Map<string, boolean>();
         const newRuleStates = new Map<string, boolean>();
@@ -115,7 +138,12 @@ export const createRootStore = (initState: RootState = defaultInitState) => {
           }
         }
 
-        set({ appStates: newAppStates, ruleStates: newRuleStates });
+        setProductInsightsEnabled(productInsightsEnabled);
+        set({
+          appStates: newAppStates,
+          ruleStates: newRuleStates,
+          productInsightsEnabled,
+        });
       } catch (error) {
         logger.error("Failed to initialize from storage:", { error });
       }
@@ -191,6 +219,9 @@ export const RootStoreProvider = ({
 
           const appEnabled = appStates.get(appId) ?? true;
           store.getState().updateFromStorage(appId, appEnabled, newRuleStates);
+        } else if ("productInsightsEnabled" in message.data) {
+          const enabled = message.data.productInsightsEnabled as boolean;
+          store.getState().updateProductInsightsFromStorage(enabled);
         }
       }
     };
@@ -232,4 +263,12 @@ export const useToggleApp = () => {
 
 export const useToggleRule = () => {
   return useRootStore((state) => state.toggleRule);
+};
+
+export const useProductInsightsEnabled = () => {
+  return useRootStore((state) => state.productInsightsEnabled);
+};
+
+export const useToggleProductInsights = () => {
+  return useRootStore((state) => state.toggleProductInsights);
 };

@@ -21,7 +21,7 @@ export default defineConfig({
 			"*://*.unagi-eu.amazon.com/*",
 			"*://*.video.a2z.com/*",
 			"*://m.media-amazon.com/images/*",
-			"https://*.i.posthog.com/*",
+			"*://*.i.posthog.com/*",
 		],
 		web_accessible_resources: [
 			{
@@ -31,6 +31,7 @@ export default defineConfig({
 					"*://*.netflix.com/*",
 					"*://*.winoffrg.dev/*",
 					"*://*.primevideo.com/*",
+					"*://*.i.posthog.com/*",
 				],
 			},
 		],
@@ -59,11 +60,10 @@ export default defineConfig({
 	modules: ["@wxt-dev/module-react", "@wxt-dev/auto-icons"],
 	vite: (config) => ({
 		plugins: [
-			config.command === "serve" ? [] : Obfusticator(),
 			tailwindcss(),
 		],
 		build: {
-			sourcemap: config.command === "serve",
+			sourcemap: true
 		},
 	}),
 	publicDir: "src/public",

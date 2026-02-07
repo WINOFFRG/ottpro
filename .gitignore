@@ -33,4 +33,4 @@ src/lib/apps/*
 
 .next
 node_modules
-.env.*
+.env*
