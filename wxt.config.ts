@@ -21,6 +21,7 @@ export default defineConfig({
 			"*://*.unagi-eu.amazon.com/*",
 			"*://*.video.a2z.com/*",
 			"*://m.media-amazon.com/images/*",
+			"https://*.i.posthog.com/*",
 		],
 		web_accessible_resources: [
 			{

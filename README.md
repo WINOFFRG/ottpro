@@ -24,6 +24,21 @@ This extension provides patches for various OTT apps like Netflix, Hulu and many
   
 2. **Coming Soon** 
 
+## 📊 Telemetry (PostHog)
+
+OTTPRO supports privacy-aware analytics via PostHog with user opt-out control.
+
+Set environment variables before running/building:
+
+```bash
+VITE_PUBLIC_POSTHOG_KEY=phc_K20rGiWZk0rKDBotmuFA3gx9Zuz0JOLnrpxnWNlmrBT
+VITE_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
+```
+
+Notes:
+- Telemetry is enabled by default and can be turned off in the extension UI (`Privacy` section).
+- When disabled, events and exception capture are stopped.
+
 ## 🤝 Contributing
 Contributions to this repo and welcome! Please feel free to raise issues, submit pull requests or discuss.
 

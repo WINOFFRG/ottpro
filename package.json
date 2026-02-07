@@ -71,5 +71,8 @@
     "@tailwindcss/oxide",
     "javascript-obfuscator",
     "spawn-sync"
-  ]
+  ],
+  "dependencies": {
+    "posthog-js": "^1.342.1"
+  }
 }
