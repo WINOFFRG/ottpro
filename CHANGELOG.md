@@ -1,5 +1,11 @@
 # OTTPRO
 
+## 0.2.1
+
+### Patch Changes
+
+- [#15](https://github.com/WINOFFRG/ottpro/pull/15) [`c8daaa3`](https://github.com/WINOFFRG/ottpro/commit/c8daaa31ae9a759ebde81134cfbc7d7abcf63f36) Thanks [@WINOFFRG](https://github.com/WINOFFRG)! - fix: primevideo matcher regex
+
 ## 0.2.0
 
 ### Minor Changes
