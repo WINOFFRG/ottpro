@@ -13,8 +13,8 @@ const TARGET_URL_PATTERN =
   /^https:\/\/m\.media-amazon\.com\/images\/I\/.*\.js/i;
 
 const FIND_PATTERN =
-  "w=e=>(null==e?void 0:e.isBonus)||(null==e?void 0:e.sequenceNumber)&&e.sequenceNumber>=1&&e.sequenceNumber<=3";
-const REPLACE_WITH = "w=e=>true";
+  "e=>(null==e?void 0:e.isBonus)||(null==e?void 0:e.sequenceNumber)&&e.sequenceNumber>=1&&e.sequenceNumber<=3";
+const REPLACE_WITH = "e=>true";
 
 const handledUrls = new Set<string>();
 
