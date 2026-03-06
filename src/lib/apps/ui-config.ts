@@ -7,7 +7,7 @@ export interface AppUiConfig {
     closeButtonGlow: string;
     appPill: string;
   };
-  cardVariant: "netflix" | "primevideo" | "default";
+  cardVariant: "hotstar" | "netflix" | "primevideo" | "default";
 }
 
 const defaultTheme = {
@@ -18,6 +18,16 @@ const defaultTheme = {
 };
 
 export const appUiConfigs: Record<string, AppUiConfig> = {
+  hotstar: {
+    url: "https://www.hotstar.com/",
+    theme: {
+      wrapper:
+        "bg-[linear-gradient(92.7deg,rgba(20,146,255,0.95)_0%,rgba(8,96,196,0.85)_50%,rgba(235,0,102,0.88)_100%)] before:from-[#7fd4ff]/35 before:via-transparent before:to-[#f85ea8]/25 after:from-[#04234a]/40 after:via-transparent after:to-[#97004d]/30",
+      closeButtonGlow: "hover:shadow-[#1492ff]/35",
+      appPill: "border-[#9bd8ff]/40 bg-[#1492ff]/20 text-[#e9f8ff]",
+    },
+    cardVariant: "hotstar",
+  },
   netflix: {
     url: "https://www.netflix.com/",
     theme: {
@@ -55,6 +65,8 @@ export const appCardVariants = cva(
   {
     variants: {
       variant: {
+        hotstar:
+          "border-[#8fd4ff]/40 bg-[linear-gradient(120deg,rgba(20,146,255,0.26),rgba(8,96,196,0.2)_52%,rgba(235,0,102,0.2))] hover:border-[#b0e2ff]/60",
         netflix:
           "border-[#ff6169]/30 bg-[linear-gradient(135deg,rgba(229,9,20,0.22),rgba(122,0,0,0.15))] hover:border-[#ff6169]/50",
         primevideo:

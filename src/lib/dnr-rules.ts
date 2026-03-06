@@ -25,6 +25,7 @@ interface DnrRule {
   condition: {
     regexFilter?: string;
     urlFilter?: string;
+    initiatorDomains?: string[];
     resourceTypes: string[];
   };
 }
@@ -123,9 +124,169 @@ export const PRIMEVIDEO_BLOCK_TELEMETRY_RULES: DnrRule[] = [
 ];
 
 /**
+ * Hotstar - Disable Telemetry Rules
+ * Block telemetry hosts only when requests are initiated from www.hotstar.com
+ */
+const HOTSTAR_INITIATOR_DOMAINS = ["www.hotstar.com"];
+
+export const HOTSTAR_DISABLE_TELEMETRY_RULES: DnrRule[] = [
+  {
+    id: 1101,
+    priority: 1,
+    action: { type: "block" },
+    condition: {
+      urlFilter: "||analytics.google.com/",
+      initiatorDomains: HOTSTAR_INITIATOR_DOMAINS,
+      resourceTypes: TELEMETRY_RESOURCE_TYPES,
+    },
+  },
+  {
+    id: 1102,
+    priority: 1,
+    action: { type: "block" },
+    condition: {
+      urlFilter: "||bifrost-api.hotstar.com/",
+      initiatorDomains: HOTSTAR_INITIATOR_DOMAINS,
+      resourceTypes: TELEMETRY_RESOURCE_TYPES,
+    },
+  },
+  {
+    id: 1103,
+    priority: 1,
+    action: { type: "block" },
+    condition: {
+      regexFilter: "^https://[^/]+\\.ingest\\.sentry\\.io/",
+      initiatorDomains: HOTSTAR_INITIATOR_DOMAINS,
+      resourceTypes: TELEMETRY_RESOURCE_TYPES,
+    },
+  },
+  {
+    id: 1104,
+    priority: 1,
+    action: { type: "block" },
+    condition: {
+      urlFilter: "||q.quora.com/",
+      initiatorDomains: HOTSTAR_INITIATOR_DOMAINS,
+      resourceTypes: TELEMETRY_RESOURCE_TYPES,
+    },
+  },
+  {
+    id: 1105,
+    priority: 1,
+    action: { type: "block" },
+    condition: {
+      urlFilter: "||cdn.growthbook.io/",
+      initiatorDomains: HOTSTAR_INITIATOR_DOMAINS,
+      resourceTypes: TELEMETRY_RESOURCE_TYPES,
+    },
+  },
+  {
+    id: 1106,
+    priority: 1,
+    action: { type: "block" },
+    condition: {
+      urlFilter: "||www.googletagmanager.com/",
+      initiatorDomains: HOTSTAR_INITIATOR_DOMAINS,
+      resourceTypes: TELEMETRY_RESOURCE_TYPES,
+    },
+  },
+  {
+    id: 1107,
+    priority: 1,
+    action: { type: "block" },
+    condition: {
+      urlFilter: "||connect.facebook.net/",
+      initiatorDomains: HOTSTAR_INITIATOR_DOMAINS,
+      resourceTypes: TELEMETRY_RESOURCE_TYPES,
+    },
+  },
+  {
+    id: 1108,
+    priority: 1,
+    action: { type: "block" },
+    condition: {
+      urlFilter: "||static.ads-twitter.com/",
+      initiatorDomains: HOTSTAR_INITIATOR_DOMAINS,
+      resourceTypes: TELEMETRY_RESOURCE_TYPES,
+    },
+  },
+  {
+    id: 1109,
+    priority: 1,
+    action: { type: "block" },
+    condition: {
+      urlFilter: "||bat.bing.com/",
+      initiatorDomains: HOTSTAR_INITIATOR_DOMAINS,
+      resourceTypes: TELEMETRY_RESOURCE_TYPES,
+    },
+  },
+  {
+    id: 1110,
+    priority: 1,
+    action: { type: "block" },
+    condition: {
+      urlFilter: "||a.quora.com/",
+      initiatorDomains: HOTSTAR_INITIATOR_DOMAINS,
+      resourceTypes: TELEMETRY_RESOURCE_TYPES,
+    },
+  },
+  {
+    id: 1111,
+    priority: 1,
+    action: { type: "block" },
+    condition: {
+      urlFilter: "||t.co/",
+      initiatorDomains: HOTSTAR_INITIATOR_DOMAINS,
+      resourceTypes: TELEMETRY_RESOURCE_TYPES,
+    },
+  },
+  {
+    id: 1112,
+    priority: 1,
+    action: { type: "block" },
+    condition: {
+      urlFilter: "||usersvc.hotstar.com/",
+      initiatorDomains: HOTSTAR_INITIATOR_DOMAINS,
+      resourceTypes: TELEMETRY_RESOURCE_TYPES,
+    },
+  },
+  {
+    id: 1113,
+    priority: 1,
+    action: { type: "block" },
+    condition: {
+      urlFilter: "||www.google-analytics.com/",
+      initiatorDomains: HOTSTAR_INITIATOR_DOMAINS,
+      resourceTypes: TELEMETRY_RESOURCE_TYPES,
+    },
+  },
+  {
+    id: 1114,
+    priority: 1,
+    action: { type: "block" },
+    condition: {
+      urlFilter: "||doubleclick.net/",
+      initiatorDomains: HOTSTAR_INITIATOR_DOMAINS,
+      resourceTypes: TELEMETRY_RESOURCE_TYPES,
+    },
+  },
+  {
+    id: 1115,
+    priority: 1,
+    action: { type: "block" },
+    condition: {
+      urlFilter: "||www.google.co.in/",
+      initiatorDomains: HOTSTAR_INITIATOR_DOMAINS,
+      resourceTypes: TELEMETRY_RESOURCE_TYPES,
+    },
+  },
+];
+
+/**
  * Map of app:rule keys to their DNR rule definitions
  */
 export const DNR_RULE_MAP: Record<string, DnrRule | DnrRule[]> = {
+  "hotstar:disable-telemetry": HOTSTAR_DISABLE_TELEMETRY_RULES,
   "primevideo:bypass-lite-plan": PRIMEVIDEO_BYPASS_LITE_PLAN_RULE,
   "primevideo:block-telemetry": PRIMEVIDEO_BLOCK_TELEMETRY_RULES,
 };
