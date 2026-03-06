@@ -5,6 +5,17 @@ on:
     branches:
       - master
   workflow_dispatch:
+    inputs:
+      skip_release:
+        description: "Skip GitHub release creation and only run store submit logic"
+        type: boolean
+        required: false
+        default: false
+      force_submit:
+        description: "Force submit to stores even if changesets did not publish this run"
+        type: boolean
+        required: false
+        default: false
 
 jobs:
   version:
@@ -33,6 +44,7 @@ jobs:
 
       - name: Create Release Pull Request
         id: changesets
+        if: github.event_name != 'workflow_dispatch' || !inputs.force_submit
         uses: changesets/action@v1
         with:
           version: bun run version
@@ -53,7 +65,7 @@ jobs:
           echo "OTTPRO version: $VERSION"
 
       - name: Create release
-        if: steps.changesets.outputs.published == 'true'
+        if: steps.changesets.outputs.published == 'true' && (github.event_name != 'workflow_dispatch' || !inputs.skip_release)
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.version.outputs.version }}
@@ -72,7 +84,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Submit to stores
-        if: steps.changesets.outputs.published == 'true'
+        if: steps.changesets.outputs.published == 'true' || (github.event_name == 'workflow_dispatch' && inputs.force_submit)
         run: |
           bun wxt submit \
             --chrome-zip .output/*-chrome.zip \
