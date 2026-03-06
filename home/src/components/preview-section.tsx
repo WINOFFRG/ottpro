@@ -4,6 +4,7 @@ import type { StaticImport } from "next/dist/shared/lib/get-img-props";
 import { useState } from "react";
 import NetflixImage from "@/assets/netflix.png";
 import PrimeVideoImage from "@/assets/prime_video.png";
+import HotstarImage from "@/assets/hotstar_ottpro.png";
 import DefaultImage from "@/assets/default_all.png";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
@@ -30,13 +31,21 @@ const features: FeatureItem[] = [
   },
   {
     title: "Prime Video",
-    isNew: true,
     image: PrimeVideoImage,
     capabilities: [
       "Bypass Lite Plan restrictions",
       "Watch 1080p FHD content on desktop",
       "Blocks all Ads during playback",
       "Blocks tracking and analytics",
+    ],
+  },
+  {
+    title: "Hotstar",
+    image: HotstarImage,
+    capabilities: [
+      "Removes ad sections from the app",
+      "Cleans up ad prompts during playback",
+      "Stops background tracking calls",
     ],
   },
   {
