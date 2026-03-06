@@ -95,9 +95,14 @@ export function OTTModal() {
               <RuleSection title="Rules">
                 {currentApp.rules.map((rule) => (
                   <RuleItem
-                    description={rule.description}
+                    description={
+                      rule.supported === false
+                        ? rule.unsupportedDescription || rule.description
+                        : rule.description
+                    }
                     key={rule.id}
                     ruleId={rule.id}
+                    supported={rule.supported !== false}
                     title={rule.name}
                   />
                 ))}

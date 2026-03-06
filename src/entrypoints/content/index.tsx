@@ -16,6 +16,7 @@ import {
   OTT_PRO_APP_ENABLED_KEY,
   OTT_PRO_ENABLED_RULES_KEY,
 } from "@/lib/shared/constants";
+import { withRuleSupport } from "@/lib/rule-support";
 
 const ModalRootTagName = "ott-pro-ui";
 
@@ -32,8 +33,8 @@ export default defineContentScript({
     const isDev = import.meta.env.MODE === "development";
 
     const currentDomain = window.location.hostname;
-    const allAppConfigs = await sendMessage(
-      StorageMessageType.GET_ALL_APP_CONFIGS,
+    const allAppConfigs = withRuleSupport(
+      await sendMessage(StorageMessageType.GET_ALL_APP_CONFIGS),
     );
     const currentApp = allAppConfigs.find((config) =>
       new RegExp(config.domainPattern).test(currentDomain),
@@ -41,7 +42,7 @@ export default defineContentScript({
 
     if (currentApp) {
       const enabledRules = currentApp.rules
-        .filter((rule) => rule.enabled)
+        .filter((rule) => rule.enabled && rule.supported !== false)
         .map((rule) => rule.id);
       document.documentElement.dataset[OTT_PRO_ENABLED_RULES_KEY] =
         JSON.stringify(enabledRules);
@@ -91,11 +92,12 @@ async function createUi(ctx: ContentScriptContext) {
     sendMessage(StorageMessageType.GET_ALL_APP_CONFIGS),
     sendMessage(StorageMessageType.GET_PRODUCT_INSIGHTS_ENABLED),
   ]);
+  const configsWithSupport = withRuleSupport(allAppConfigs);
   setProductInsightsEnabled(productInsightsEnabled);
   if (productInsightsEnabled) {
     initPostHog();
   }
-  const app = allAppConfigs.find((config) =>
+  const app = configsWithSupport.find((config) =>
     new RegExp(config.domainPattern).test(currentDomain),
   );
 

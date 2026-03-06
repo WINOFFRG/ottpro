@@ -13,15 +13,26 @@ interface RuleItemProps {
 	ruleId: string;
 	title: string;
 	description?: string;
+	supported?: boolean;
 }
 
-export function RuleItem({ ruleId, title, description }: RuleItemProps) {
+export function RuleItem({
+	ruleId,
+	title,
+	description,
+	supported = true,
+}: RuleItemProps) {
 	const [isExpanded, setIsExpanded] = useState(false);
 	const currentApp = useRootStore((state) => state.currentApp);
 	const toggleRule = useToggleRule();
 	const isEnabled = useRuleEnabled(currentApp?.id || "", ruleId);
+	const isRuleEnabled = supported ? isEnabled : false;
 
 	const handleToggle = async () => {
+		if (!supported) {
+			return;
+		}
+
 		if (currentApp) {
 			await toggleRule(currentApp.id, ruleId);
 		}
@@ -48,8 +59,9 @@ export function RuleItem({ ruleId, title, description }: RuleItemProps) {
 						<p className="m-0 font-normal text-sm text-white">{title}</p>
 					</div>
 					<Switch
-						checked={isEnabled}
+						checked={isRuleEnabled}
 						className="relative h-6 w-10 cursor-pointer rounded-full border-2 border-white/10 p-1 shadow-none transition-all duration-200 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=checked]:border-transparent data-[state=checked]:bg-white/30 data-[state=unchecked]:bg-transparent"
+						disabled={!supported}
 						onCheckedChange={handleToggle}
 					/>
 				</div>

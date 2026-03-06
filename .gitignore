@@ -26,8 +26,6 @@ web-ext.config.ts
 *.sw?
 dist
 
-src/lib/apps/hotstar
-
 .next
 node_modules
 .env*

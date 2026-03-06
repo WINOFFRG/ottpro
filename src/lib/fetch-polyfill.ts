@@ -69,10 +69,12 @@ export function fetchApiPolyfill(middlewares: Middleware[] = []) {
     const xhr = new OriginalXHR();
     const originalOpen = xhr.open.bind(xhr);
     const originalSend = xhr.send.bind(xhr);
+    const originalSetRequestHeader = xhr.setRequestHeader.bind(xhr);
 
     let method = "";
     let url = "";
     let requestBody: Document | XMLHttpRequestBodyInit | null | undefined;
+    const requestHeaders = new Headers();
 
     xhr.open = function (
       _method: string,
@@ -84,6 +86,11 @@ export function fetchApiPolyfill(middlewares: Middleware[] = []) {
       method = _method;
       url = _url.toString();
       return originalOpen(_method, _url, async ?? true, username, password);
+    };
+
+    xhr.setRequestHeader = function (name: string, value: string) {
+      requestHeaders.set(name, value);
+      return originalSetRequestHeader(name, value);
     };
 
     xhr.send = async function (
@@ -98,6 +105,7 @@ export function fetchApiPolyfill(middlewares: Middleware[] = []) {
         init: {
           method,
           body: body as BodyInit | undefined,
+          headers: requestHeaders,
         },
         url,
         handled: false,

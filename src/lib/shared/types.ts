@@ -21,6 +21,8 @@ export interface AppRule {
   name: string;
   enabled: boolean;
   description: string;
+  unsupportedDescription?: string;
+  supported?: boolean;
   middleware: Middleware;
   onInit?: () => void;
 }
