@@ -6,6 +6,4 @@ import type { Middleware } from "@/lib/shared/middleware";
  * The actual request blocking is handled by declarativeNetRequest
  * dynamic rules (see src/lib/dnr-rules.ts).
  */
-export const blockTelemetry: Middleware = async (_ctx, next) => {
-  await next();
-};
+export const blockTelemetry: Middleware = (_ctx, next) => next();

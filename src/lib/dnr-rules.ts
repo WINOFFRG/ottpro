@@ -270,16 +270,6 @@ export const HOTSTAR_DISABLE_TELEMETRY_RULES: DnrRule[] = [
       resourceTypes: TELEMETRY_RESOURCE_TYPES,
     },
   },
-  {
-    id: 1115,
-    priority: 1,
-    action: { type: "block" },
-    condition: {
-      urlFilter: "||www.google.co.in/",
-      initiatorDomains: HOTSTAR_INITIATOR_DOMAINS,
-      resourceTypes: TELEMETRY_RESOURCE_TYPES,
-    },
-  },
 ];
 
 /**
