@@ -25,6 +25,8 @@ This extension provides patches for various OTT apps like Netflix, Prime Video, 
 1. **Netflix**
    <details>
    <summary>Bypass Device Blocking Access Netflix on multiple without Geo Blocking or Email Verification.</summary>
+
+   ![Netflix OTTPRO preview](./home/public/netflix.png)
    </details>
    <details>
    <summary>Enable PiP Mode - Clears Netflix PiP restriction on supported pages.</summary>
@@ -56,12 +58,15 @@ This extension provides patches for various OTT apps like Netflix, Prime Video, 
 3. **Hotstar**
    <details>
    <summary>Block Ads - Removes ad widgets and ad payload keys from BFF API responses.</summary>
+
+   ![Hotstar OTTPRO preview](./home/public/hotstar_ottpro.png)
    </details>
    <details>
    <summary>Disable Telemetry - Blocks telemetry and tracking endpoints on Hotstar.</summary>
-   </details>
 
    ![Hotstar OTTPRO preview](./home/public/hotstar_ottpro.png)
+   </details>
+
 
 ## 🤝 Contributing
 Contributions to this repo and welcome! Please feel free to raise issues, submit pull requests or discuss.
