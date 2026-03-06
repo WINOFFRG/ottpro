@@ -165,16 +165,18 @@ export const blockAds: Middleware = async (ctx, next) => {
     return;
   }
 
+  let upstreamResponse: Response | undefined;
+
   try {
-    const response = await ctx.originalFetch(ctx.request, ctx.init);
-    const responseText = await response.clone().text();
+    upstreamResponse = await ctx.originalFetch(ctx.request, ctx.init);
+    const responseText = await upstreamResponse.clone().text();
 
     let payload: unknown;
     try {
       payload = JSON.parse(responseText);
     } catch {
       ctx.setHandled();
-      ctx.setResponse(response);
+      ctx.setResponse(upstreamResponse);
       return;
     }
 
@@ -184,7 +186,7 @@ export const blockAds: Middleware = async (ctx, next) => {
 
     if (removedWidgets.length === 0 && playerAdDataRemovals.length === 0) {
       ctx.setHandled();
-      ctx.setResponse(response);
+      ctx.setResponse(upstreamResponse);
       return;
     }
 
@@ -214,7 +216,7 @@ export const blockAds: Middleware = async (ctx, next) => {
       removedPlayerAdDataCount: playerAdDataRemovals.length,
     });
 
-    const responseHeaders = new Headers(response.headers);
+    const responseHeaders = new Headers(upstreamResponse.headers);
     responseHeaders.delete("content-length");
     responseHeaders.delete("content-encoding");
     responseHeaders.set("content-type", "application/json");
@@ -222,8 +224,8 @@ export const blockAds: Middleware = async (ctx, next) => {
     ctx.setHandled();
     ctx.setResponse(
       new Response(JSON.stringify(payload), {
-        status: response.status,
-        statusText: response.statusText,
+        status: upstreamResponse.status,
+        statusText: upstreamResponse.statusText,
         headers: responseHeaders,
       }),
     );
@@ -234,7 +236,14 @@ export const blockAds: Middleware = async (ctx, next) => {
       middleware: "block-ads",
       url: ctx.url,
       error,
+      hasUpstreamResponse: Boolean(upstreamResponse),
     });
+    if (upstreamResponse) {
+      ctx.setHandled();
+      ctx.setResponse(upstreamResponse);
+      return;
+    }
+
     await next();
   }
 };

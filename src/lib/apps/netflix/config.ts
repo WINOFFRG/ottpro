@@ -24,8 +24,7 @@ export const config: AppConfig = {
       id: AUTO_PICTURE_IN_PICTURE_RULE_ID,
       enabled: true,
       name: "Enable PiP Mode",
-      description:
-        "Removes Netflix PiP restrictions and enables automatic Picture-in-Picture mode.",
+      description: "Enables Picture-in-Picture mode for Netflix.",
       unsupportedDescription:
         "Unavailable in this browser because Picture-in-Picture is not supported.",
       middleware: autoPictureInPictureMode,
