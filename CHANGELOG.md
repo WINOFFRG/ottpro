@@ -1,5 +1,13 @@
 # OTTPRO
 
+## 0.3.0
+
+### Minor Changes
+
+- [#17](https://github.com/WINOFFRG/ottpro/pull/17) [`f903ad4`](https://github.com/WINOFFRG/ottpro/commit/f903ad4c247a166ee0617243ad986a140236a274) Thanks [@WINOFFRG](https://github.com/WINOFFRG)! - feat: netflix enable pip
+
+- [#17](https://github.com/WINOFFRG/ottpro/pull/17) [`f903ad4`](https://github.com/WINOFFRG/ottpro/commit/f903ad4c247a166ee0617243ad986a140236a274) Thanks [@WINOFFRG](https://github.com/WINOFFRG)! - feat: hotstar new app
+
 ## 0.2.1
 
 ### Patch Changes
