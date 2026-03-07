@@ -11,6 +11,7 @@ import {
 
 import "@/assets/global.css";
 import { StorageMessageType, sendMessage } from "@/lib/messaging";
+import { isSessionOnlyRule } from "@/lib/session-rules";
 
 import {
   OTT_PRO_APP_ENABLED_KEY,
@@ -66,6 +67,15 @@ export default defineContentScript({
         event.type === StorageMessageType.STORAGE_CHANGED &&
         event.data?.ruleId
       ) {
+        const appId = event.data.appId;
+        const ruleId = event.data.ruleId;
+        if (
+          typeof appId === "string" &&
+          typeof ruleId === "string" &&
+          isSessionOnlyRule(appId, ruleId)
+        ) {
+          return;
+        }
         window.location.reload();
       }
     });

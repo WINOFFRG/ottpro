@@ -47,6 +47,9 @@ export class AppStorageManager {
       this.appStorageItems.set(app.id, createAppStorage(app.id));
 
       for (const rule of app.rules) {
+        if (rule.sessionOnly) {
+          continue;
+        }
         const key = this.getRuleKey(app.id, rule.id);
         this.ruleStorageItems.set(key, createRuleStorage(app.id, rule.id));
       }
@@ -55,6 +58,11 @@ export class AppStorageManager {
 
   private getRuleKey(appId: string, ruleId: string): string {
     return `${appId}:${ruleId}`;
+  }
+
+  private findStaticRule(appId: string, ruleId: string) {
+    const app = appConfigs.find((config) => config.id === appId);
+    return app?.rules.find((rule) => rule.id === ruleId);
   }
 
   async getAppEnabled(appId: string): Promise<boolean> {
@@ -76,11 +84,16 @@ export class AppStorageManager {
   }
 
   async getRuleEnabled(appId: string, ruleId: string): Promise<boolean> {
+    const staticRule = this.findStaticRule(appId, ruleId);
+    if (staticRule?.sessionOnly) {
+      return staticRule.enabled;
+    }
+
     const key = this.getRuleKey(appId, ruleId);
     const storageItem = this.ruleStorageItems.get(key);
     if (!storageItem) {
       logger.warn(`No storage item found for rule: ${key}`);
-      return true; // Default to enabled
+      return staticRule?.enabled ?? true; // Default to enabled
     }
     return await storageItem.getValue();
   }
@@ -91,6 +104,11 @@ export class AppStorageManager {
     ruleId: string,
     enabled: boolean,
   ): Promise<void> {
+    const staticRule = this.findStaticRule(appId, ruleId);
+    if (staticRule?.sessionOnly) {
+      return;
+    }
+
     const key = this.getRuleKey(appId, ruleId);
     const storageItem = this.ruleStorageItems.get(key);
     if (!storageItem) {
@@ -111,7 +129,9 @@ export class AppStorageManager {
     const rulesWithStorageState = await Promise.all(
       staticConfig.rules.map(async (rule) => ({
         ...rule,
-        enabled: await this.getRuleEnabled(appId, rule.id),
+        enabled: rule.sessionOnly
+          ? rule.enabled
+          : await this.getRuleEnabled(appId, rule.id),
       })),
     );
 
@@ -211,6 +231,9 @@ export class AppStorageManager {
       }
 
       for (const rule of app.rules) {
+        if (rule.sessionOnly) {
+          continue;
+        }
         const key = this.getRuleKey(app.id, rule.id);
         const ruleStorageItem = this.ruleStorageItems.get(key);
         if (ruleStorageItem) {

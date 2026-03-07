@@ -1,3 +1,4 @@
+import { appConfigs } from "@/lib/apps/registry";
 import { onMessage, StorageMessageType } from "@/lib/messaging";
 import { AppStorageManager } from "@/lib/storage";
 import { syncAllDynamicRules, syncDynamicRule } from "@/lib/dnr-rules";
@@ -8,6 +9,10 @@ import { WELCOME_URL } from "@/lib/shared/constants";
 
 export default defineBackground(() => {
   const storageManager = new AppStorageManager();
+  const isSessionOnlyRule = (appId: string, ruleId: string) =>
+    appConfigs
+      .find((app) => app.id === appId)
+      ?.rules.find((rule) => rule.id === ruleId)?.sessionOnly === true;
   storageManager
     .getProductInsightsEnabled()
     .then((enabled) => {
@@ -60,6 +65,10 @@ export default defineBackground(() => {
 
   onMessage(StorageMessageType.SET_RULE_ENABLED, async (message) => {
     const { appId, ruleId, enabled } = message.data;
+
+    if (isSessionOnlyRule(appId, ruleId)) {
+      return;
+    }
 
     await storageManager.setRuleEnabled(appId, ruleId, enabled);
 

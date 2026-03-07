@@ -10,6 +10,11 @@ import { createStore } from "zustand/vanilla";
 import { StorageMessageType, sendMessage } from "@/lib/messaging";
 import { logger } from "@/lib/logger";
 import { setProductInsightsEnabled } from "@/lib/posthog";
+import {
+  getSessionOnlyRuleDefault,
+  isSessionOnlyRule,
+} from "@/lib/session-rules";
+import { OTT_PRO_SESSION_RULE_TOGGLE_EVENT } from "@/lib/shared/constants";
 import type { AppConfig } from "@/lib/shared/types";
 
 export interface RootState {
@@ -66,8 +71,25 @@ export const createRootStore = (initState: RootState = defaultInitState) => {
     toggleRule: async (appId: string, ruleId: string) => {
       const { ruleStates } = get();
       const ruleKey = `${appId}:${ruleId}`;
-      const currentState = ruleStates.get(ruleKey) ?? true;
+      const currentState =
+        ruleStates.get(ruleKey) ??
+        getSessionOnlyRuleDefault(appId, ruleId) ??
+        true;
       const newState = !currentState;
+
+      if (isSessionOnlyRule(appId, ruleId)) {
+        const newRuleStates = new Map(ruleStates);
+        newRuleStates.set(ruleKey, newState);
+        set({ ruleStates: newRuleStates });
+
+        document.dispatchEvent(
+          new CustomEvent(OTT_PRO_SESSION_RULE_TOGGLE_EVENT, {
+            detail: { appId, ruleId },
+          }),
+        );
+
+        return;
+      }
 
       await sendMessage(StorageMessageType.SET_RULE_ENABLED, {
         appId,
@@ -134,7 +156,8 @@ export const createRootStore = (initState: RootState = defaultInitState) => {
 
           for (const rule of app.rules) {
             const ruleKey = `${app.id}:${rule.id}`;
-            newRuleStates.set(ruleKey, rule.enabled);
+            const sessionDefault = getSessionOnlyRuleDefault(app.id, rule.id);
+            newRuleStates.set(ruleKey, sessionDefault ?? rule.enabled);
           }
         }
 
@@ -228,8 +251,57 @@ export const RootStoreProvider = ({
 
     browser.runtime.onMessage.addListener(messageListener);
 
+    const resetSessionOnlyRulesForCurrentApp = () => {
+      const { currentApp, ruleStates } = store.getState();
+      if (!currentApp) {
+        return;
+      }
+
+      const sessionRules = currentApp.rules.filter((rule) => rule.sessionOnly);
+      if (sessionRules.length === 0) {
+        return;
+      }
+
+      const newRuleStates = new Map(ruleStates);
+      let changed = false;
+
+      for (const rule of sessionRules) {
+        const ruleKey = `${currentApp.id}:${rule.id}`;
+        const defaultState =
+          getSessionOnlyRuleDefault(currentApp.id, rule.id) ?? rule.enabled;
+        const currentState = newRuleStates.get(ruleKey) ?? defaultState;
+
+        if (currentState !== defaultState) {
+          newRuleStates.set(ruleKey, defaultState);
+          changed = true;
+        }
+      }
+
+      if (changed) {
+        store.setState({ ruleStates: newRuleStates });
+      }
+    };
+
+    let lastRoute = window.location.href;
+    const handleRouteChange = () => {
+      const currentRoute = window.location.href;
+      if (currentRoute === lastRoute) {
+        return;
+      }
+      lastRoute = currentRoute;
+      resetSessionOnlyRulesForCurrentApp();
+    };
+
+    const routePollId = window.setInterval(handleRouteChange, 400);
+
+    window.addEventListener("popstate", handleRouteChange);
+    window.addEventListener("hashchange", handleRouteChange);
+
     return () => {
       browser.runtime.onMessage.removeListener(messageListener);
+      window.clearInterval(routePollId);
+      window.removeEventListener("popstate", handleRouteChange);
+      window.removeEventListener("hashchange", handleRouteChange);
     };
   }, []);
 
@@ -254,7 +326,19 @@ export const useAppEnabled = (appId: string): boolean => {
 
 export const useRuleEnabled = (appId: string, ruleId: string): boolean => {
   const ruleKey = `${appId}:${ruleId}`;
-  return useRootStore((state) => state.ruleStates.get(ruleKey) ?? true);
+  return useRootStore((state) => {
+    const storedState = state.ruleStates.get(ruleKey);
+    if (storedState !== undefined) {
+      return storedState;
+    }
+
+    const ruleDefault =
+      state.currentApp?.id === appId
+        ? state.currentApp.rules.find((rule) => rule.id === ruleId)?.enabled
+        : undefined;
+
+    return ruleDefault ?? true;
+  });
 };
 
 export const useToggleApp = () => {

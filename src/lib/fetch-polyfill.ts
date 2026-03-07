@@ -60,7 +60,7 @@ export function fetchApiPolyfill(middlewares: Middleware[] = []) {
       return ctx.response;
     }
 
-    return originalFetch.call(window, resource, ctx.init);
+    return originalFetch.call(window, ctx.request, ctx.init);
   };
 
   const OriginalXHR = window.XMLHttpRequest;
@@ -121,14 +121,13 @@ export function fetchApiPolyfill(middlewares: Middleware[] = []) {
 
       await runMiddlewares(ctx);
 
-      if (ctx.handled && ctx.response) {
-        // Fake the XHR response
+      const applyResponseToXhr = async (response: Response) => {
         Object.defineProperty(xhr, "readyState", { value: 4 });
-        Object.defineProperty(xhr, "status", { value: ctx.response.status });
+        Object.defineProperty(xhr, "status", { value: response.status });
         Object.defineProperty(xhr, "statusText", {
-          value: ctx.response.statusText,
+          value: response.statusText,
         });
-        const text = await ctx.response.text();
+        const text = await response.text();
         Object.defineProperty(xhr, "responseText", { value: text });
         Object.defineProperty(xhr, "response", { value: text });
 
@@ -136,12 +135,29 @@ export function fetchApiPolyfill(middlewares: Middleware[] = []) {
         xhr.dispatchEvent(new Event("readystatechange"));
         xhr.dispatchEvent(new Event("load"));
         xhr.dispatchEvent(new Event("loadend"));
+      };
+
+      if (ctx.handled && ctx.response) {
+        await applyResponseToXhr(ctx.response);
         return;
       }
 
       // Use modified body if changed
       const finalBody =
         typeof ctx.init?.body === "string" ? ctx.init.body : requestBody;
+      const resolvedRequestUrl =
+        ctx.request instanceof Request ? ctx.request.url : ctx.request.toString();
+
+      if (resolvedRequestUrl !== url) {
+        const patchedResponse = await originalFetch.call(window, ctx.request, {
+          ...(ctx.init ?? {}),
+          method: ctx.init?.method ?? method,
+          body: finalBody as BodyInit | undefined,
+        });
+        await applyResponseToXhr(patchedResponse);
+        return;
+      }
+
       return originalSend(
         finalBody as Document | XMLHttpRequestBodyInit | null,
       );
