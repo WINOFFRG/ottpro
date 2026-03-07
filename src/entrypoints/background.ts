@@ -1,18 +1,14 @@
-import { appConfigs } from "@/lib/apps/registry";
 import { onMessage, StorageMessageType } from "@/lib/messaging";
 import { AppStorageManager } from "@/lib/storage";
 import { syncAllDynamicRules, syncDynamicRule } from "@/lib/dnr-rules";
 import { logger } from "@/lib/logger";
 import { initPostHog, setProductInsightsEnabled } from "@/lib/posthog";
+import { isSessionOnlyRule } from "@/lib/session-rules";
 
 import { WELCOME_URL } from "@/lib/shared/constants";
 
 export default defineBackground(() => {
   const storageManager = new AppStorageManager();
-  const isSessionOnlyRule = (appId: string, ruleId: string) =>
-    appConfigs
-      .find((app) => app.id === appId)
-      ?.rules.find((rule) => rule.id === ruleId)?.sessionOnly === true;
   storageManager
     .getProductInsightsEnabled()
     .then((enabled) => {

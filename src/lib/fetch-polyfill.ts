@@ -122,14 +122,48 @@ export function fetchApiPolyfill(middlewares: Middleware[] = []) {
       await runMiddlewares(ctx);
 
       const applyResponseToXhr = async (response: Response) => {
+        const responseType = xhr.responseType;
+
         Object.defineProperty(xhr, "readyState", { value: 4 });
         Object.defineProperty(xhr, "status", { value: response.status });
         Object.defineProperty(xhr, "statusText", {
           value: response.statusText,
         });
-        const text = await response.text();
-        Object.defineProperty(xhr, "responseText", { value: text });
-        Object.defineProperty(xhr, "response", { value: text });
+
+        if (responseType === "arraybuffer") {
+          const buffer = await response.arrayBuffer();
+          Object.defineProperty(xhr, "response", { value: buffer });
+          Object.defineProperty(xhr, "responseText", { value: "" });
+        } else if (responseType === "blob") {
+          const blob = await response.blob();
+          Object.defineProperty(xhr, "response", { value: blob });
+          Object.defineProperty(xhr, "responseText", { value: "" });
+        } else if (responseType === "document") {
+          const text = await response.text();
+          const parser =
+            typeof DOMParser !== "undefined" ? new DOMParser() : undefined;
+          const documentResponse = parser
+            ? parser.parseFromString(text, "text/html")
+            : text;
+
+          Object.defineProperty(xhr, "response", { value: documentResponse });
+          Object.defineProperty(xhr, "responseText", { value: text });
+        } else if (responseType === "json") {
+          const text = await response.text();
+          let parsedJson: unknown = null;
+          try {
+            parsedJson = text.length ? JSON.parse(text) : null;
+          } catch {
+            parsedJson = null;
+          }
+
+          Object.defineProperty(xhr, "response", { value: parsedJson });
+          Object.defineProperty(xhr, "responseText", { value: text });
+        } else {
+          const text = await response.text();
+          Object.defineProperty(xhr, "responseText", { value: text });
+          Object.defineProperty(xhr, "response", { value: text });
+        }
 
         // Dispatch events
         xhr.dispatchEvent(new Event("readystatechange"));
@@ -149,10 +183,15 @@ export function fetchApiPolyfill(middlewares: Middleware[] = []) {
         ctx.request instanceof Request ? ctx.request.url : ctx.request.toString();
 
       if (resolvedRequestUrl !== url) {
+        const credentials: RequestCredentials = xhr.withCredentials
+          ? "include"
+          : (ctx.init?.credentials ?? "same-origin");
+
         const patchedResponse = await originalFetch.call(window, ctx.request, {
           ...(ctx.init ?? {}),
           method: ctx.init?.method ?? method,
           body: finalBody as BodyInit | undefined,
+          credentials,
         });
         await applyResponseToXhr(patchedResponse);
         return;
