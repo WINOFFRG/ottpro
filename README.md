@@ -34,6 +34,12 @@ This extension provides patches for various OTT apps like Netflix, Prime Video, 
 
    https://github.com/user-attachments/assets/14d0bde7-b684-4288-945d-4dcd84690300
    </details>
+   <details>
+   <summary>Player Stats - Opens Netflix built-in player stats quickly.</summary>
+   &nbsp;
+
+   Use shortcut: <kbd>Ctrl</kbd> + <kbd>Alt/Option</kbd> + <kbd>Shift</kbd> + <kbd>D</kbd>
+   </details>
 
 2. **Prime Video**
    <details>
@@ -57,6 +63,21 @@ This extension provides patches for various OTT apps like Netflix, Prime Video, 
 
 3. **Hotstar**
    <details>
+   <summary>Enable 4K - Unlocks 4K playback on supported devices.</summary>
+
+   ![Hotstar OTTPRO preview](./home/public/hotstar_4k.png)
+
+   > [!WARNING]
+   > Hotstar 4K feature auto-falls back to Full HD (FHD) on devices/browsers that do not support 4K playback.
+
+   </details>
+   <details>
+   <summary>Player Stats - Opens Hotstar built-in player stats quickly.
+   </summary>
+
+   ![Hotstar OTTPRO preview](./home/public/hotstar_4k.png)
+   </details>
+   <details>
    <summary>Block Ads - Removes ad widgets and ad payload keys from BFF API responses.</summary>
 
    ![Hotstar OTTPRO preview](./home/public/hotstar_ottpro.png)
@@ -66,7 +87,6 @@ This extension provides patches for various OTT apps like Netflix, Prime Video, 
 
    ![Hotstar OTTPRO preview](./home/public/hotstar_ottpro.png)
    </details>
-
 
 ## 🤝 Contributing
 Contributions to this repo and welcome! Please feel free to raise issues, submit pull requests or discuss.

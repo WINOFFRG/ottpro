@@ -18,6 +18,7 @@ interface FeatureItem {
   image: string | StaticImport;
   disabled?: boolean;
   capabilities?: string[];
+  warning?: string;
 }
 
 const features: FeatureItem[] = [
@@ -27,6 +28,7 @@ const features: FeatureItem[] = [
     capabilities: [
       "Removes the device blocking screen",
       "Watch over any network now!",
+      "Open built-in player stats instantly",
     ],
   },
   {
@@ -46,7 +48,11 @@ const features: FeatureItem[] = [
       "Removes ad sections from the app",
       "Cleans up ad prompts during playback",
       "Stops background tracking calls",
+      "Unlocks 4K playback on supported devices",
+      "Open built-in player stats quickly",
     ],
+    warning:
+      "If your device/browser does not support 4K playback, video automatically falls back to Full HD (FHD).",
   },
   {
     title: "Coming Soon",
@@ -161,6 +167,11 @@ export function PreviewSection() {
                           </li>
                         ))}
                       </ul>
+                      {feature.warning && (
+                        <div className="mt-3 rounded-lg border border-amber-500/35 bg-amber-500/10 px-3 py-2 text-amber-100 text-xs leading-relaxed">
+                          {feature.warning}
+                        </div>
+                      )}
                     </div>
                   )}
                 </button>
