@@ -60,7 +60,7 @@ export function fetchApiPolyfill(middlewares: Middleware[] = []) {
       return ctx.response;
     }
 
-    return originalFetch.call(window, resource, ctx.init);
+    return originalFetch.call(window, ctx.request, ctx.init);
   };
 
   const OriginalXHR = window.XMLHttpRequest;
@@ -121,27 +121,82 @@ export function fetchApiPolyfill(middlewares: Middleware[] = []) {
 
       await runMiddlewares(ctx);
 
-      if (ctx.handled && ctx.response) {
-        // Fake the XHR response
+      const applyResponseToXhr = async (response: Response) => {
+        const responseType = xhr.responseType;
+
         Object.defineProperty(xhr, "readyState", { value: 4 });
-        Object.defineProperty(xhr, "status", { value: ctx.response.status });
+        Object.defineProperty(xhr, "status", { value: response.status });
         Object.defineProperty(xhr, "statusText", {
-          value: ctx.response.statusText,
+          value: response.statusText,
         });
-        const text = await ctx.response.text();
-        Object.defineProperty(xhr, "responseText", { value: text });
-        Object.defineProperty(xhr, "response", { value: text });
+
+        if (responseType === "arraybuffer") {
+          const buffer = await response.arrayBuffer();
+          Object.defineProperty(xhr, "response", { value: buffer });
+          Object.defineProperty(xhr, "responseText", { value: "" });
+        } else if (responseType === "blob") {
+          const blob = await response.blob();
+          Object.defineProperty(xhr, "response", { value: blob });
+          Object.defineProperty(xhr, "responseText", { value: "" });
+        } else if (responseType === "document") {
+          const text = await response.text();
+          const parser =
+            typeof DOMParser !== "undefined" ? new DOMParser() : undefined;
+          const documentResponse = parser
+            ? parser.parseFromString(text, "text/html")
+            : text;
+
+          Object.defineProperty(xhr, "response", { value: documentResponse });
+          Object.defineProperty(xhr, "responseText", { value: text });
+        } else if (responseType === "json") {
+          const text = await response.text();
+          let parsedJson: unknown = null;
+          try {
+            parsedJson = text.length ? JSON.parse(text) : null;
+          } catch {
+            parsedJson = null;
+          }
+
+          Object.defineProperty(xhr, "response", { value: parsedJson });
+          Object.defineProperty(xhr, "responseText", { value: text });
+        } else {
+          const text = await response.text();
+          Object.defineProperty(xhr, "responseText", { value: text });
+          Object.defineProperty(xhr, "response", { value: text });
+        }
 
         // Dispatch events
         xhr.dispatchEvent(new Event("readystatechange"));
         xhr.dispatchEvent(new Event("load"));
         xhr.dispatchEvent(new Event("loadend"));
+      };
+
+      if (ctx.handled && ctx.response) {
+        await applyResponseToXhr(ctx.response);
         return;
       }
 
       // Use modified body if changed
       const finalBody =
         typeof ctx.init?.body === "string" ? ctx.init.body : requestBody;
+      const resolvedRequestUrl =
+        ctx.request instanceof Request ? ctx.request.url : ctx.request.toString();
+
+      if (resolvedRequestUrl !== url) {
+        const credentials: RequestCredentials = xhr.withCredentials
+          ? "include"
+          : (ctx.init?.credentials ?? "same-origin");
+
+        const patchedResponse = await originalFetch.call(window, ctx.request, {
+          ...(ctx.init ?? {}),
+          method: ctx.init?.method ?? method,
+          body: finalBody as BodyInit | undefined,
+          credentials,
+        });
+        await applyResponseToXhr(patchedResponse);
+        return;
+      }
+
       return originalSend(
         finalBody as Document | XMLHttpRequestBodyInit | null,
       );

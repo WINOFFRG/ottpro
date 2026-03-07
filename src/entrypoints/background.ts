@@ -3,6 +3,7 @@ import { AppStorageManager } from "@/lib/storage";
 import { syncAllDynamicRules, syncDynamicRule } from "@/lib/dnr-rules";
 import { logger } from "@/lib/logger";
 import { initPostHog, setProductInsightsEnabled } from "@/lib/posthog";
+import { isSessionOnlyRule } from "@/lib/session-rules";
 
 import { WELCOME_URL } from "@/lib/shared/constants";
 
@@ -60,6 +61,10 @@ export default defineBackground(() => {
 
   onMessage(StorageMessageType.SET_RULE_ENABLED, async (message) => {
     const { appId, ruleId, enabled } = message.data;
+
+    if (isSessionOnlyRule(appId, ruleId)) {
+      return;
+    }
 
     await storageManager.setRuleEnabled(appId, ruleId, enabled);
 

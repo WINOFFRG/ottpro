@@ -3,6 +3,7 @@ import { fetchApiPolyfill } from "@/lib/fetch-polyfill";
 import {
   OTT_PRO_APP_ENABLED_KEY,
   OTT_PRO_ENABLED_RULES_KEY,
+  OTT_PRO_SESSION_RULE_TOGGLE_EVENT,
 } from "@/lib/shared/constants";
 
 import type { Middleware } from "@/lib/shared/middleware";
@@ -13,6 +14,29 @@ export default defineUnlistedScript(() => {
     if (!staticConfig) {
       return;
     }
+
+    document.addEventListener(
+      OTT_PRO_SESSION_RULE_TOGGLE_EVENT,
+      (event: Event) => {
+        const customEvent = event as CustomEvent<{
+          appId?: string;
+          ruleId?: string;
+        }>;
+
+        const appId = customEvent.detail?.appId;
+        const ruleId = customEvent.detail?.ruleId;
+        if (appId !== staticConfig.id || !ruleId) {
+          return;
+        }
+
+        const rule = staticConfig.rules.find((configRule) => configRule.id === ruleId);
+        if (!rule?.sessionOnly || !rule.onInit) {
+          return;
+        }
+
+        rule.onInit();
+      },
+    );
 
     // Read enabled state from DOM (set by content script from storage)
     const appEnabled =

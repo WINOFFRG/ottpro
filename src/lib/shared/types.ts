@@ -20,6 +20,7 @@ export interface AppRule {
   id: string;
   name: string;
   enabled: boolean;
+  sessionOnly?: boolean;
   description: string;
   unsupportedDescription?: string;
   supported?: boolean;
