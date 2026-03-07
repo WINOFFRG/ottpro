@@ -1,5 +1,11 @@
 # OTTPRO
 
+## 0.4.0
+
+### Minor Changes
+
+- [#20](https://github.com/WINOFFRG/ottpro/pull/20) [`54ffbe1`](https://github.com/WINOFFRG/ottpro/commit/54ffbe1d3bebc9bb7e24b4d2f7f12ff49756a496) Thanks [@WINOFFRG](https://github.com/WINOFFRG)! - feat: hotstar unlock 4K & stats4n
+
 ## 0.3.0
 
 ### Minor Changes
