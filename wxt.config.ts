@@ -50,6 +50,7 @@ export default defineConfig({
 		permissions: [
 			"storage",
 			"declarativeNetRequest",
+			"cookies",
 		],
 		browser_specific_settings: {
 			gecko: {

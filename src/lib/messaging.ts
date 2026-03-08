@@ -1,5 +1,11 @@
 import { defineExtensionMessaging } from "@webext-core/messaging";
 import type { AppConfig } from "./shared/types";
+import type {
+  ExportCookiesRequest,
+  ExportCookiesResponse,
+  ImportCookiesRequest,
+  ImportCookiesResponse,
+} from "./cookie-transfer";
 
 export const StorageMessageType = {
   GET_APP_ENABLED: "get-app-enabled",
@@ -11,6 +17,8 @@ export const StorageMessageType = {
   GET_APP_CONFIG: "get-app-config",
   GET_ALL_APP_CONFIGS: "get-all-app-configs",
   INITIALIZE_DEFAULTS: "initialize-defaults",
+  EXPORT_COOKIES: "export-cookies",
+  IMPORT_COOKIES: "import-cookies",
   STORAGE_CHANGED: "storage-changed",
   ON_APP_ENABLED_CHANGED: "on-app-enabled-changed",
   ON_RULE_ENABLED_CHANGED: "on-rule-enabled-changed",
@@ -38,6 +46,12 @@ interface ProtocolMap {
   [StorageMessageType.GET_APP_CONFIG]: (appId: string) => AppConfig;
   [StorageMessageType.GET_ALL_APP_CONFIGS]: () => AppConfig[];
   [StorageMessageType.INITIALIZE_DEFAULTS]: () => void;
+  [StorageMessageType.EXPORT_COOKIES]: (
+    data: ExportCookiesRequest,
+  ) => ExportCookiesResponse;
+  [StorageMessageType.IMPORT_COOKIES]: (
+    data: ImportCookiesRequest,
+  ) => ImportCookiesResponse;
   [StorageMessageType.STORAGE_CHANGED]: (data: {
     appId?: string;
     ruleId?: string;

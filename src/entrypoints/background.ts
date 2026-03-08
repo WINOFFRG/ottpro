@@ -4,6 +4,7 @@ import { syncAllDynamicRules, syncDynamicRule } from "@/lib/dnr-rules";
 import { logger } from "@/lib/logger";
 import { initPostHog, setProductInsightsEnabled } from "@/lib/posthog";
 import { isSessionOnlyRule } from "@/lib/session-rules";
+import { exportCookies, importCookies } from "@/lib/cookie-transfer-background";
 
 import { WELCOME_URL } from "@/lib/shared/constants";
 
@@ -134,6 +135,14 @@ export default defineBackground(() => {
   onMessage(StorageMessageType.INITIALIZE_DEFAULTS, async () => {
     logger.debug("Background: Initializing storage defaults");
     await storageManager.initializeDefaults();
+  });
+
+  onMessage(StorageMessageType.EXPORT_COOKIES, async (message) => {
+    return await exportCookies(message.data);
+  });
+
+  onMessage(StorageMessageType.IMPORT_COOKIES, async (message) => {
+    return await importCookies(message.data);
   });
 
   (browser.action ?? browser.browserAction).onClicked.addListener(
