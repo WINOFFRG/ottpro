@@ -1,5 +1,11 @@
 # OTTPRO
 
+## 0.4.1
+
+### Patch Changes
+
+- [#22](https://github.com/WINOFFRG/ottpro/pull/22) [`29a64c5`](https://github.com/WINOFFRG/ottpro/commit/29a64c5a1f32f9d6d50905b174761fa0a79b7aa1) Thanks [@WINOFFRG](https://github.com/WINOFFRG)! - feat: login trasfer on hotstar
+
 ## 0.4.0
 
 ### Minor Changes
