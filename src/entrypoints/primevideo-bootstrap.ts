@@ -3,8 +3,7 @@ import {
   patchPrimeVideoScriptContent,
 } from "@/lib/apps/primevideo/script-patch-shared";
 
-const PRIMEVIDEO_PAGE_BOOTSTRAP_FLAG =
-  "__OTT_PRO_PRIMEVIDEO_PAGE_BOOTSTRAP__";
+const PRIMEVIDEO_PAGE_BOOTSTRAP_FLAG = "__OTT_PRO_PRIMEVIDEO_PAGE_BOOTSTRAP__";
 const PENDING_URL_KEY = "__ottProPrimevideoPendingSrc";
 type PrimeVideoScriptElement = HTMLScriptElement & {
   __ottProPrimevideoPendingSrc?: string;

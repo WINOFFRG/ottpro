@@ -1,9 +1,9 @@
-export const PRIMEVIDEO_SCRIPT_TARGET_URL_PATTERN =
+const PRIMEVIDEO_SCRIPT_TARGET_URL_PATTERN =
   /^https:\/\/m\.media-amazon\.com\/images\/.*\.js/i;
 
-export const PRIMEVIDEO_SCRIPT_FIND_PATTERN =
+const PRIMEVIDEO_SCRIPT_FIND_PATTERN =
   "e=>(null==e?void 0:e.isBonus)||(null==e?void 0:e.sequenceNumber)&&e.sequenceNumber>=1&&e.sequenceNumber<=3";
-export const PRIMEVIDEO_SCRIPT_REPLACE_WITH = "e=>true";
+const PRIMEVIDEO_SCRIPT_REPLACE_WITH = "e=>true";
 
 export function isPrimeVideoTargetScriptUrl(url: string) {
   return PRIMEVIDEO_SCRIPT_TARGET_URL_PATTERN.test(url);
