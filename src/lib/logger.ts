@@ -12,6 +12,31 @@ export const LogLevel = {
 } as const;
 
 export type LogLevel = (typeof LogLevel)[keyof typeof LogLevel];
+export const DEFAULT_LOG_LEVEL = LogLevel.INFO;
+export const LOG_LEVEL_OPTIONS = [
+  { label: "Debug", value: LogLevel.DEBUG },
+  { label: "Info", value: LogLevel.INFO },
+  { label: "Warn", value: LogLevel.WARN },
+  { label: "Error", value: LogLevel.ERROR },
+] as const;
+
+const loggerInstances = new Set<Logger>();
+let globalLogLevel: LogLevel = DEFAULT_LOG_LEVEL;
+
+export function isValidLogLevel(value: number): value is LogLevel {
+  return Object.values(LogLevel).includes(value as LogLevel);
+}
+
+export function getGlobalLogLevel(): LogLevel {
+  return globalLogLevel;
+}
+
+export function setGlobalLogLevel(level: LogLevel) {
+  globalLogLevel = level;
+  for (const loggerInstance of loggerInstances) {
+    loggerInstance.setLevel(level);
+  }
+}
 
 export interface LogEntry {
   timestamp: number;
@@ -127,8 +152,8 @@ export class PostHogTransport implements LogTransport {
       typeof dataObject?.app_id === "string"
         ? dataObject.app_id
         : typeof dataObject?.appId === "string"
-          ? dataObject.appId
-          : undefined;
+        ? dataObject.appId
+        : undefined;
     const diagnosticsContext = getPostHogDiagnosticsContext({
       app_id: appIdFromData,
       log_level: levelName,
@@ -190,10 +215,6 @@ export class ConsoleTransport implements LogTransport {
   }
 
   log(entry: LogEntry): void {
-    if (!isProductInsightsEnabled() && entry.level !== LogLevel.ERROR) {
-      return;
-    }
-
     const timestamp = new Date(entry.timestamp).toISOString();
     const source = entry.source ? `[${entry.source}]` : "";
     const message = `${timestamp} ${source} ${entry.message}`;
@@ -266,11 +287,12 @@ export class ConsoleTransport implements LogTransport {
  */
 export class Logger {
   private transports: LogTransport[] = [];
-  private minLevel: LogLevel = LogLevel.INFO;
+  private minLevel: LogLevel = globalLogLevel;
   private source?: string;
 
   constructor(source?: string) {
     this.source = source;
+    loggerInstances.add(this);
   }
 
   /**
@@ -450,11 +472,10 @@ export class Logger {
  * Create a default logger instance
  */
 export function createLogger(source?: string): Logger {
-  const { defaultLogLevel } = useAppConfig();
   return new Logger(source)
     .addTransport(new ConsoleTransport())
     .addTransport(new MemoryTransport())
-    .setLevel(defaultLogLevel);
+    .setLevel(getGlobalLogLevel());
 }
 
 /**
@@ -466,7 +487,7 @@ export function createPersistentLogger(source?: string): Logger {
     .addTransport(new MemoryTransport())
     .addTransport(new LocalStorageTransport())
     .addTransport(new PostHogTransport())
-    .setLevel(LogLevel.INFO);
+    .setLevel(getGlobalLogLevel());
 }
 
 // Default logger instance

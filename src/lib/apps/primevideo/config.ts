@@ -1,7 +1,7 @@
 import type { AppConfig } from "@/lib/shared/types";
 import { blockAds } from "./block-ads";
 import { blockTelemetry } from "./block-telemetry";
-import { patchScripts, startScriptTagInterceptor } from "./script-watcher";
+import { patchScripts } from "./script-watcher";
 
 /**
  * Prime Video App Configuration
@@ -20,9 +20,6 @@ export const config: AppConfig = {
       description:
         "With a Lite plan you can watch 1080p FHD content on desktop as well.",
       middleware: patchScripts,
-      onInit: () => {
-        startScriptTagInterceptor();
-      },
     },
     {
       id: "block-ads",

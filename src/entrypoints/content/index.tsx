@@ -1,13 +1,12 @@
 import ReactDOM from "react-dom/client";
 import type { ContentScriptContext } from "#imports";
 import App from "@/components/App";
-import { PostHogProvider } from "posthog-js/react";
 import {
   initPostHog,
-  POSTHOG_API_KEY,
-  posthogOptions,
+  PRODUCT_INSIGHTS_AVAILABLE,
   setProductInsightsEnabled,
 } from "@/lib/posthog";
+import { ProductInsightsProvider } from "@/lib/posthog-provider";
 
 import "@/assets/global.css";
 import { StorageMessageType, sendMessage } from "@/lib/messaging";
@@ -103,8 +102,9 @@ async function createUi(ctx: ContentScriptContext) {
     sendMessage(StorageMessageType.GET_PRODUCT_INSIGHTS_ENABLED),
   ]);
   const configsWithSupport = withRuleSupport(allAppConfigs);
-  setProductInsightsEnabled(productInsightsEnabled);
-  if (productInsightsEnabled) {
+  const insightsEnabled = PRODUCT_INSIGHTS_AVAILABLE && productInsightsEnabled;
+  setProductInsightsEnabled(insightsEnabled);
+  if (insightsEnabled) {
     initPostHog();
   }
   const app = configsWithSupport.find((config) =>
@@ -126,11 +126,11 @@ async function createUi(ctx: ContentScriptContext) {
     onMount: (uiContainer, _, shadowHost) => {
       if (!root) {
         root = ReactDOM.createRoot(uiContainer);
-        if (productInsightsEnabled) {
+        if (insightsEnabled) {
           root.render(
-            <PostHogProvider apiKey={POSTHOG_API_KEY} options={posthogOptions}>
+            <ProductInsightsProvider>
               <App app={app} root={shadowHost} />
-            </PostHogProvider>,
+            </ProductInsightsProvider>,
           );
         } else {
           root.render(<App app={app} root={shadowHost} />);
