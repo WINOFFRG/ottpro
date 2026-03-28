@@ -1,5 +1,11 @@
 # OTTPRO
 
+## 0.5.1
+
+### Patch Changes
+
+- [#26](https://github.com/WINOFFRG/ottpro/pull/26) [`9100f07`](https://github.com/WINOFFRG/ottpro/commit/9100f0741a4bdf5123befb98feb81c6451c5a574) Thanks [@WINOFFRG](https://github.com/WINOFFRG)! - chore: remove analytics
+
 ## 0.5.0
 
 ### Minor Changes
