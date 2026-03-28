@@ -1,6 +1,6 @@
 import { appConfigs } from "@/lib/apps/registry";
 import type { AppConfig } from "@/lib/shared/types";
-import { logger } from "@/lib/logger";
+import { DEFAULT_LOG_LEVEL, logger, type LogLevel } from "@/lib/logger";
 
 export const createAppStorage = (appId: string) => {
   return storage.defineItem<boolean>(`local:app:${appId}:enabled` as const, {
@@ -26,6 +26,11 @@ export const productInsightsStorage = storage.defineItem<boolean>(
     version: 1,
   },
 );
+
+export const logLevelStorage = storage.defineItem<LogLevel>("local:log-level", {
+  fallback: DEFAULT_LOG_LEVEL,
+  version: 1,
+});
 
 export class AppStorageManager {
   private appStorageItems = new Map<
@@ -148,6 +153,14 @@ export class AppStorageManager {
 
   async setProductInsightsEnabled(enabled: boolean): Promise<void> {
     await productInsightsStorage.setValue(enabled);
+  }
+
+  async getLogLevel(): Promise<LogLevel> {
+    return await logLevelStorage.getValue();
+  }
+
+  async setLogLevel(level: LogLevel): Promise<void> {
+    await logLevelStorage.setValue(level);
   }
 
   async getAllAppConfigs(): Promise<AppConfig[]> {

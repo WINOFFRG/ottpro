@@ -1,8 +1,12 @@
 import { onMessage, StorageMessageType } from "@/lib/messaging";
 import { AppStorageManager } from "@/lib/storage";
 import { syncAllDynamicRules, syncDynamicRule } from "@/lib/dnr-rules";
-import { logger } from "@/lib/logger";
-import { initPostHog, setProductInsightsEnabled } from "@/lib/posthog";
+import { logger, setGlobalLogLevel } from "@/lib/logger";
+import {
+  initPostHog,
+  PRODUCT_INSIGHTS_AVAILABLE,
+  setProductInsightsEnabled,
+} from "@/lib/posthog";
 import { isSessionOnlyRule } from "@/lib/session-rules";
 import { exportCookies, importCookies } from "@/lib/cookie-transfer-background";
 
@@ -10,13 +14,17 @@ import { WELCOME_URL } from "@/lib/shared/constants";
 
 export default defineBackground(() => {
   const storageManager = new AppStorageManager();
-  storageManager
-    .getProductInsightsEnabled()
-    .then((enabled) => {
-      if (enabled) {
+  Promise.all([
+    storageManager.getProductInsightsEnabled(),
+    storageManager.getLogLevel(),
+  ])
+    .then(([enabled, logLevel]) => {
+      setGlobalLogLevel(logLevel);
+      const insightsEnabled = PRODUCT_INSIGHTS_AVAILABLE && enabled;
+      if (insightsEnabled) {
         initPostHog();
       }
-      setProductInsightsEnabled(enabled);
+      setProductInsightsEnabled(insightsEnabled);
     })
     .catch((error) => {
       logger.error("Failed to load product insights setting", { error });
@@ -57,7 +65,15 @@ export default defineBackground(() => {
   });
 
   onMessage(StorageMessageType.GET_PRODUCT_INSIGHTS_ENABLED, async () => {
+    if (!PRODUCT_INSIGHTS_AVAILABLE) {
+      return false;
+    }
+
     return await storageManager.getProductInsightsEnabled();
+  });
+
+  onMessage(StorageMessageType.GET_LOG_LEVEL, async () => {
+    return await storageManager.getLogLevel();
   });
 
   onMessage(StorageMessageType.SET_RULE_ENABLED, async (message) => {
@@ -93,7 +109,7 @@ export default defineBackground(() => {
   onMessage(
     StorageMessageType.SET_PRODUCT_INSIGHTS_ENABLED,
     async (message) => {
-      const { enabled } = message.data;
+      const enabled = PRODUCT_INSIGHTS_AVAILABLE && message.data.enabled;
       await storageManager.setProductInsightsEnabled(enabled);
       if (enabled) {
         initPostHog();
@@ -118,6 +134,29 @@ export default defineBackground(() => {
       }
     },
   );
+
+  onMessage(StorageMessageType.SET_LOG_LEVEL, async (message) => {
+    const { level } = message.data;
+    await storageManager.setLogLevel(level);
+    setGlobalLogLevel(level);
+
+    const tabs = await browser.tabs.query({});
+    for (const tab of tabs) {
+      if (tab.id) {
+        browser.tabs
+          .sendMessage(tab.id, {
+            type: StorageMessageType.STORAGE_CHANGED,
+            data: { logLevel: level },
+          })
+          .catch((error) => {
+            logger.error("Failed to send log level message to tab", {
+              tabId: tab.id,
+              error,
+            });
+          });
+      }
+    }
+  });
 
   onMessage(StorageMessageType.GET_APP_CONFIG, async (message) => {
     const config = await storageManager.getAppConfig(message.data);

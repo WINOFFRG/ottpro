@@ -1,6 +1,10 @@
 import { useEffect } from "react";
 import type { AppConfig } from "@/lib/shared/types";
-import { setCurrentAppContext } from "@/lib/posthog";
+import { DEFAULT_LOG_LEVEL } from "@/lib/logger";
+import {
+  PRODUCT_INSIGHTS_AVAILABLE,
+  setCurrentAppContext,
+} from "@/lib/posthog";
 import { RootStoreProvider, useRootStore } from "../hooks/useStore";
 import { OTTModal } from "./OTTModal";
 
@@ -29,19 +33,20 @@ function AppContent() {
 }
 
 function App({ root, app }: { root: HTMLElement; app: AppConfig | undefined }) {
-	return (
-		<RootStoreProvider
-			initialState={{
-				root,
-				currentApp: app,
-				appStates: new Map(),
-				ruleStates: new Map(),
-				productInsightsEnabled: true,
-			}}
-		>
-			<AppContent />
-		</RootStoreProvider>
-	);
+  return (
+    <RootStoreProvider
+      initialState={{
+        root,
+        currentApp: app,
+        appStates: new Map(),
+        ruleStates: new Map(),
+        productInsightsEnabled: PRODUCT_INSIGHTS_AVAILABLE,
+        logLevel: DEFAULT_LOG_LEVEL,
+      }}
+    >
+      <AppContent />
+    </RootStoreProvider>
+  );
 }
 
 export default App;

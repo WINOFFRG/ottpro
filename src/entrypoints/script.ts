@@ -29,7 +29,9 @@ export default defineUnlistedScript(() => {
           return;
         }
 
-        const rule = staticConfig.rules.find((configRule) => configRule.id === ruleId);
+        const rule = staticConfig.rules.find(
+          (configRule) => configRule.id === ruleId,
+        );
         if (!rule?.sessionOnly || !rule.onInit) {
           return;
         }
@@ -58,14 +60,14 @@ export default defineUnlistedScript(() => {
       }
     }
 
+    if (middlewares.length > 0) {
+      fetchApiPolyfill(middlewares);
+    }
+
     for (const rule of staticConfig.rules) {
       if (enabledRuleIds.includes(rule.id) && rule.onInit) {
         rule.onInit();
       }
-    }
-
-    if (middlewares.length > 0) {
-      fetchApiPolyfill(middlewares);
     }
   } catch (error) {
     console.error("Script: Error during execution:", error);

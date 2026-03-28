@@ -1,4 +1,5 @@
 import { defineExtensionMessaging } from "@webext-core/messaging";
+import type { LogLevel } from "./logger";
 import type { AppConfig } from "./shared/types";
 import type {
   ExportCookiesRequest,
@@ -14,6 +15,8 @@ export const StorageMessageType = {
   SET_RULE_ENABLED: "set-rule-enabled",
   GET_PRODUCT_INSIGHTS_ENABLED: "get-product-insights-enabled",
   SET_PRODUCT_INSIGHTS_ENABLED: "set-product-insights-enabled",
+  GET_LOG_LEVEL: "get-log-level",
+  SET_LOG_LEVEL: "set-log-level",
   GET_APP_CONFIG: "get-app-config",
   GET_ALL_APP_CONFIGS: "get-all-app-configs",
   INITIALIZE_DEFAULTS: "initialize-defaults",
@@ -43,6 +46,10 @@ interface ProtocolMap {
   [StorageMessageType.SET_PRODUCT_INSIGHTS_ENABLED]: (data: {
     enabled: boolean;
   }) => void;
+  [StorageMessageType.GET_LOG_LEVEL]: () => LogLevel;
+  [StorageMessageType.SET_LOG_LEVEL]: (data: {
+    level: LogLevel;
+  }) => void;
   [StorageMessageType.GET_APP_CONFIG]: (appId: string) => AppConfig;
   [StorageMessageType.GET_ALL_APP_CONFIGS]: () => AppConfig[];
   [StorageMessageType.INITIALIZE_DEFAULTS]: () => void;
@@ -56,6 +63,7 @@ interface ProtocolMap {
     appId?: string;
     ruleId?: string;
     productInsightsEnabled?: boolean;
+    logLevel?: LogLevel;
     enabled?: boolean;
   }) => void;
   [StorageMessageType.ON_APP_ENABLED_CHANGED]: (data: {
