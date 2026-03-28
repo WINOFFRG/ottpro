@@ -72,9 +72,6 @@
     "javascript-obfuscator",
     "spawn-sync"
   ],
-  "dependencies": {
-    "posthog-js": "^1.342.1"
-  },
   "overrides": {
     "publish-browser-extension": "^4.0.3"
   }

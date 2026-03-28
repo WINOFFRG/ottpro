@@ -2,11 +2,7 @@ import { onMessage, StorageMessageType } from "@/lib/messaging";
 import { AppStorageManager } from "@/lib/storage";
 import { syncAllDynamicRules, syncDynamicRule } from "@/lib/dnr-rules";
 import { logger, setGlobalLogLevel } from "@/lib/logger";
-import {
-  initPostHog,
-  PRODUCT_INSIGHTS_AVAILABLE,
-  setProductInsightsEnabled,
-} from "@/lib/posthog";
+
 import { isSessionOnlyRule } from "@/lib/session-rules";
 import { exportCookies, importCookies } from "@/lib/cookie-transfer-background";
 
@@ -20,11 +16,6 @@ export default defineBackground(() => {
   ])
     .then(([enabled, logLevel]) => {
       setGlobalLogLevel(logLevel);
-      const insightsEnabled = PRODUCT_INSIGHTS_AVAILABLE && enabled;
-      if (insightsEnabled) {
-        initPostHog();
-      }
-      setProductInsightsEnabled(insightsEnabled);
     })
     .catch((error) => {
       logger.error("Failed to load product insights setting", { error });
@@ -64,14 +55,6 @@ export default defineBackground(() => {
     return await storageManager.getRuleEnabled(appId, ruleId);
   });
 
-  onMessage(StorageMessageType.GET_PRODUCT_INSIGHTS_ENABLED, async () => {
-    if (!PRODUCT_INSIGHTS_AVAILABLE) {
-      return false;
-    }
-
-    return await storageManager.getProductInsightsEnabled();
-  });
-
   onMessage(StorageMessageType.GET_LOG_LEVEL, async () => {
     return await storageManager.getLogLevel();
   });
@@ -105,35 +88,6 @@ export default defineBackground(() => {
       }
     }
   });
-
-  onMessage(
-    StorageMessageType.SET_PRODUCT_INSIGHTS_ENABLED,
-    async (message) => {
-      const enabled = PRODUCT_INSIGHTS_AVAILABLE && message.data.enabled;
-      await storageManager.setProductInsightsEnabled(enabled);
-      if (enabled) {
-        initPostHog();
-      }
-      setProductInsightsEnabled(enabled);
-
-      const tabs = await browser.tabs.query({});
-      for (const tab of tabs) {
-        if (tab.id) {
-          browser.tabs
-            .sendMessage(tab.id, {
-              type: StorageMessageType.STORAGE_CHANGED,
-              data: { productInsightsEnabled: enabled },
-            })
-            .catch((error) => {
-              logger.error("Failed to send product insights message to tab", {
-                tabId: tab.id,
-                error,
-              });
-            });
-        }
-      }
-    },
-  );
 
   onMessage(StorageMessageType.SET_LOG_LEVEL, async (message) => {
     const { level } = message.data;
