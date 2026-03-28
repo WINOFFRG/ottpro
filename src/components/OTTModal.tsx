@@ -30,10 +30,8 @@ const HOTSTAR_LOGIN_TRANSFER_SELECTOR = {
 export function OTTModal() {
   const currentApp = useRootStore((state) => state.currentApp);
   const toggleApp = useToggleApp();
-  const productInsightsEnabled = useProductInsightsEnabled();
   const logLevel = useLogLevel();
   const setLogLevel = useSetLogLevel();
-  const toggleProductInsights = useToggleProductInsights();
   const isAppEnabled = useAppEnabled(currentApp?.id || "");
   const [hotstarView, setHotstarView] = useState<"main" | "login-transfer">(
     "main",
@@ -63,10 +61,6 @@ export function OTTModal() {
     if (currentApp) {
       await toggleApp(currentApp.id);
     }
-  };
-
-  const handleProductInsightsToggle = async () => {
-    await toggleProductInsights();
   };
 
   const handleLogLevelChange = async (
