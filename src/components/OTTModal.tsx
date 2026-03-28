@@ -1,14 +1,11 @@
 import { type ChangeEvent, useEffect, useState } from "react";
 import { LOG_LEVEL_OPTIONS, type LogLevel } from "@/lib/logger";
-import { PRODUCT_INSIGHTS_AVAILABLE } from "@/lib/posthog";
 import {
   useAppEnabled,
   useLogLevel,
-  useProductInsightsEnabled,
   useRootStore,
   useSetLogLevel,
   useToggleApp,
-  useToggleProductInsights,
 } from "../hooks/useStore";
 import { appConfigs } from "@/lib/apps/registry";
 import { getAppUiConfig, appCardVariants } from "@/lib/apps/ui-config";
@@ -370,27 +367,6 @@ export function OTTModal() {
                         <CircleArrowRightIcon className="size-4" />
                       </div>
                     </button>
-                  </RuleSection>
-                )}
-
-                {PRODUCT_INSIGHTS_AVAILABLE && (
-                  <RuleSection title="Improve Product">
-                    <div className="flex items-center justify-between">
-                      <div className="min-w-0 flex-1 pr-3">
-                        <p className="truncate font-medium text-sm text-white">
-                          Share diagnostics
-                        </p>
-                        <p className="mt-1 text-white/60 text-xs">
-                          Sends usage logs to improve product quality
-                        </p>
-                      </div>
-                      <Switch
-                        aria-label="Toggle improve product diagnostics"
-                        checked={productInsightsEnabled}
-                        className="relative h-6 w-10 cursor-pointer rounded-full border-2 border-white/10 p-1 shadow-none transition-all duration-200 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=checked]:border-transparent data-[state=checked]:bg-white/30 data-[state=unchecked]:bg-transparent"
-                        onCheckedChange={handleProductInsightsToggle}
-                      />
-                    </div>
                   </RuleSection>
                 )}
 

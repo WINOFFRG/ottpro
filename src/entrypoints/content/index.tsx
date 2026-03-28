@@ -1,13 +1,6 @@
 import ReactDOM from "react-dom/client";
 import type { ContentScriptContext } from "#imports";
 import App from "@/components/App";
-import {
-  initPostHog,
-  PRODUCT_INSIGHTS_AVAILABLE,
-  setProductInsightsEnabled,
-} from "@/lib/posthog";
-import { ProductInsightsProvider } from "@/lib/posthog-provider";
-
 import "@/assets/global.css";
 import { StorageMessageType, sendMessage } from "@/lib/messaging";
 import { isSessionOnlyRule } from "@/lib/session-rules";
@@ -97,16 +90,11 @@ async function createUi(ctx: ContentScriptContext) {
   let root: ReactDOM.Root | null = null;
 
   const currentDomain = window.location.hostname;
-  const [allAppConfigs, productInsightsEnabled] = await Promise.all([
-    sendMessage(StorageMessageType.GET_ALL_APP_CONFIGS),
-    sendMessage(StorageMessageType.GET_PRODUCT_INSIGHTS_ENABLED),
-  ]);
+  const allAppConfigs = await sendMessage(
+    StorageMessageType.GET_ALL_APP_CONFIGS,
+  );
   const configsWithSupport = withRuleSupport(allAppConfigs);
-  const insightsEnabled = PRODUCT_INSIGHTS_AVAILABLE && productInsightsEnabled;
-  setProductInsightsEnabled(insightsEnabled);
-  if (insightsEnabled) {
-    initPostHog();
-  }
+
   const app = configsWithSupport.find((config) =>
     new RegExp(config.domainPattern).test(currentDomain),
   );
@@ -126,15 +114,8 @@ async function createUi(ctx: ContentScriptContext) {
     onMount: (uiContainer, _, shadowHost) => {
       if (!root) {
         root = ReactDOM.createRoot(uiContainer);
-        if (insightsEnabled) {
-          root.render(
-            <ProductInsightsProvider>
-              <App app={app} root={shadowHost} />
-            </ProductInsightsProvider>,
-          );
-        } else {
-          root.render(<App app={app} root={shadowHost} />);
-        }
+
+        root.render(<App app={app} root={shadowHost} />);
       }
 
       return root;

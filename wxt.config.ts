@@ -3,11 +3,6 @@ import Obfusticator from "rollup-plugin-obfuscator";
 import { defineConfig } from "wxt";
 import packageJson from "./package.json" with { type: "json" };
 
-// See https://wxt.dev/api/config.html
-const posthogBuildEnabled = process.env.VITE_ENABLE_POSTHOG === "true";
-const toWorkspacePath = (relativePath: string) =>
-	new URL(relativePath, import.meta.url).pathname;
-
 export default defineConfig({
 	srcDir: "src",
 	manifestVersion: 3,
@@ -37,7 +32,6 @@ export default defineConfig({
 			"*://*.unagi-eu.amazon.com/*",
 			"*://*.video.a2z.com/*",
 			"*://m.media-amazon.com/images/*",
-			"*://*.i.posthog.com/*",
 		],
 		web_accessible_resources: [
 			{
@@ -47,7 +41,6 @@ export default defineConfig({
 					"*://*.netflix.com/*",
 					"*://*.winoffrg.dev/*",
 					"*://*.primevideo.com/*",
-					"*://*.i.posthog.com/*",
 				],
 			},
 			{
@@ -87,26 +80,6 @@ export default defineConfig({
 		plugins: [
 			tailwindcss(),
 		],
-		resolve: {
-			alias: [
-				{
-					find: "@/lib/posthog-impl",
-					replacement: toWorkspacePath(
-						posthogBuildEnabled
-							? "src/lib/posthog-enabled.ts"
-							: "src/lib/posthog-disabled.ts",
-					),
-				},
-				{
-					find: "@/lib/posthog-provider-impl",
-					replacement: toWorkspacePath(
-						posthogBuildEnabled
-							? "src/lib/posthog-provider-enabled.tsx"
-							: "src/lib/posthog-provider-disabled.tsx",
-					),
-				},
-			],
-		},
 		build: {
 			sourcemap: true
 		},

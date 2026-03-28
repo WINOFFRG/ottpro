@@ -1,9 +1,3 @@
-import {
-  getPostHog,
-  getPostHogDiagnosticsContext,
-  isProductInsightsEnabled,
-} from "@/lib/posthog";
-
 export const LogLevel = {
   DEBUG: 0,
   INFO: 1,
@@ -123,82 +117,6 @@ export class LocalStorageTransport implements LogTransport {
       localStorage.removeItem(this.storageKey);
     } catch (error) {
       console.warn("Failed to clear localStorage:", error);
-    }
-  }
-}
-
-/**
- * PostHog transport for analytics and tracing
- */
-export class PostHogTransport implements LogTransport {
-  name = "posthog";
-
-  log(entry: LogEntry): void {
-    if (!isProductInsightsEnabled()) {
-      return;
-    }
-
-    const posthog = getPostHog();
-    // PostHog might not be initialized yet or might be disabled
-    if (!posthog) return;
-
-    // Map log level to PostHog event level/properties
-    const levelName = this.getLevelName(entry.level);
-    const dataObject =
-      entry.data && typeof entry.data === "object"
-        ? (entry.data as Record<string, unknown>)
-        : undefined;
-    const appIdFromData =
-      typeof dataObject?.app_id === "string"
-        ? dataObject.app_id
-        : typeof dataObject?.appId === "string"
-        ? dataObject.appId
-        : undefined;
-    const diagnosticsContext = getPostHogDiagnosticsContext({
-      app_id: appIdFromData,
-      log_level: levelName,
-      log_message: entry.message,
-      log_source: entry.source,
-      log_data: entry.data,
-      log_timestamp_unix_ms: entry.timestamp,
-    });
-
-    // Send as a generic log event
-    posthog.capture("application_log", {
-      ...diagnosticsContext,
-    });
-
-    // If error, capture as exception or unique error event
-    if (entry.level === LogLevel.ERROR) {
-      const posthogWithException = posthog as typeof posthog & {
-        captureException?: (
-          error: unknown,
-          properties?: Record<string, unknown>,
-        ) => void;
-      };
-
-      if (posthogWithException.captureException) {
-        posthogWithException.captureException(entry.data ?? entry.message, {
-          ...diagnosticsContext,
-        });
-      }
-
-      posthog.capture("application_error", diagnosticsContext);
-    }
-  }
-
-  private getLevelName(level: LogLevel): string {
-    switch (level) {
-      case LogLevel.DEBUG:
-        return "DEBUG";
-      case LogLevel.INFO:
-        return "INFO";
-      case LogLevel.WARN:
-        return "WARN";
-      case LogLevel.ERROR:
-        return "ERROR";
-      default:
-        return "UNKNOWN";
     }
   }
 }
@@ -486,7 +404,6 @@ export function createPersistentLogger(source?: string): Logger {
     .addTransport(new ConsoleTransport())
     .addTransport(new MemoryTransport())
     .addTransport(new LocalStorageTransport())
-    .addTransport(new PostHogTransport())
     .setLevel(getGlobalLogLevel());
 }
 

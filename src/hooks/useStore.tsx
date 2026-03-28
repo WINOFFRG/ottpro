@@ -14,10 +14,7 @@ import {
   setGlobalLogLevel,
   type LogLevel,
 } from "@/lib/logger";
-import {
-  PRODUCT_INSIGHTS_AVAILABLE,
-  setProductInsightsEnabled,
-} from "@/lib/posthog";
+
 import {
   getSessionOnlyRuleDefault,
   isSessionOnlyRule,
@@ -31,16 +28,13 @@ export interface RootState {
   // Storage-backed app states
   appStates: Map<string, boolean>;
   ruleStates: Map<string, boolean>;
-  productInsightsEnabled: boolean;
   logLevel: LogLevel;
 }
 
 export interface RootActions {
   toggleApp: (appId: string) => Promise<void>;
   toggleRule: (appId: string, ruleId: string) => Promise<void>;
-  toggleProductInsights: () => Promise<void>;
   setLogLevel: (level: LogLevel) => Promise<void>;
-  updateProductInsightsFromStorage: (enabled: boolean) => void;
   updateLogLevelFromStorage: (level: LogLevel) => void;
   updateFromStorage: (
     appId: string,
@@ -57,7 +51,6 @@ export const defaultInitState: RootState = {
   currentApp: undefined,
   appStates: new Map(),
   ruleStates: new Map(),
-  productInsightsEnabled: PRODUCT_INSIGHTS_AVAILABLE,
   logLevel: DEFAULT_LOG_LEVEL,
 };
 
@@ -114,33 +107,10 @@ export const createRootStore = (initState: RootState = defaultInitState) => {
       set({ ruleStates: newRuleStates });
     },
 
-    toggleProductInsights: async () => {
-      if (!PRODUCT_INSIGHTS_AVAILABLE) {
-        set({ productInsightsEnabled: false });
-        return;
-      }
-
-      const { productInsightsEnabled } = get();
-      const enabled = !productInsightsEnabled;
-
-      await sendMessage(StorageMessageType.SET_PRODUCT_INSIGHTS_ENABLED, {
-        enabled,
-      });
-
-      setProductInsightsEnabled(enabled);
-      set({ productInsightsEnabled: enabled });
-    },
-
     setLogLevel: async (level: LogLevel) => {
       await sendMessage(StorageMessageType.SET_LOG_LEVEL, { level });
       setGlobalLogLevel(level);
       set({ logLevel: level });
-    },
-
-    updateProductInsightsFromStorage: (enabled: boolean) => {
-      const nextEnabled = PRODUCT_INSIGHTS_AVAILABLE && enabled;
-      setProductInsightsEnabled(nextEnabled);
-      set({ productInsightsEnabled: nextEnabled });
     },
 
     updateLogLevelFromStorage: (level: LogLevel) => {
@@ -172,9 +142,8 @@ export const createRootStore = (initState: RootState = defaultInitState) => {
 
     initializeFromStorage: async () => {
       try {
-        const [appConfigs, productInsightsEnabled, logLevel] = await Promise.all([
+        const [appConfigs, logLevel] = await Promise.all([
           sendMessage(StorageMessageType.GET_ALL_APP_CONFIGS),
-          sendMessage(StorageMessageType.GET_PRODUCT_INSIGHTS_ENABLED),
           sendMessage(StorageMessageType.GET_LOG_LEVEL),
         ]);
 
@@ -191,14 +160,10 @@ export const createRootStore = (initState: RootState = defaultInitState) => {
           }
         }
 
-        const insightsEnabled =
-          PRODUCT_INSIGHTS_AVAILABLE && productInsightsEnabled;
-        setProductInsightsEnabled(insightsEnabled);
         setGlobalLogLevel(logLevel);
         set({
           appStates: newAppStates,
           ruleStates: newRuleStates,
-          productInsightsEnabled: insightsEnabled,
           logLevel,
         });
       } catch (error) {
@@ -276,9 +241,6 @@ export const RootStoreProvider = ({
 
           const appEnabled = appStates.get(appId) ?? true;
           store.getState().updateFromStorage(appId, appEnabled, newRuleStates);
-        } else if ("productInsightsEnabled" in message.data) {
-          const enabled = message.data.productInsightsEnabled as boolean;
-          store.getState().updateProductInsightsFromStorage(enabled);
         } else if ("logLevel" in message.data) {
           const logLevel = message.data.logLevel as LogLevel;
           store.getState().updateLogLevelFromStorage(logLevel);
@@ -384,14 +346,6 @@ export const useToggleApp = () => {
 
 export const useToggleRule = () => {
   return useRootStore((state) => state.toggleRule);
-};
-
-export const useProductInsightsEnabled = () => {
-  return useRootStore((state) => state.productInsightsEnabled);
-};
-
-export const useToggleProductInsights = () => {
-  return useRootStore((state) => state.toggleProductInsights);
 };
 
 export const useLogLevel = () => {
