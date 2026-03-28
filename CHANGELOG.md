@@ -1,5 +1,11 @@
 # OTTPRO
 
+## 0.5.0
+
+### Minor Changes
+
+- [#24](https://github.com/WINOFFRG/ottpro/pull/24) [`5a91352`](https://github.com/WINOFFRG/ottpro/commit/5a913521fa28d0e99b33926acf4bf38cb3f1c883) Thanks [@WINOFFRG](https://github.com/WINOFFRG)! - fix: prime video blocking regex and race condition
+
 ## 0.4.1
 
 ### Patch Changes
