@@ -4,9 +4,12 @@
     "allowImportingTsExtensions": true,
     "jsx": "react-jsx",
     "baseUrl": ".",
+    "ignoreDeprecations": "6.0",
     "paths": {
       "@/*": ["./src/*"]
     },
     "strictNullChecks": true
-  }
+  },
+  "include": ["src/**/*", "wxt.config.ts", ".wxt/wxt.d.ts"],
+  "exclude": ["home", ".output"]
 }
