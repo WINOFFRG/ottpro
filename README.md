@@ -19,6 +19,9 @@ This extension provides patches for various OTT apps like Netflix, Prime Video, 
 [![Firefox Add-on Rating](https://img.shields.io/amo/rating/ottpro?logo=reverbnation&logoColor=white&label=Rating&color=FF6464)](https://addons.mozilla.org/en-US/firefox/addon/ottpro)
 [![Firefox Add-on Users](https://img.shields.io/amo/users/ottpro?color=B5FFD9&label=Installs&logo=githubsponsors&logoColor=white)](https://addons.mozilla.org/en-US/firefox/addon/ottpro)
 
+### 🧭 Building for Safari
+Refer to [Vatsal057/chrome-to-safari](https://github.com/Vatsal057/chrome-to-safari) for guidance on converting and building the extension for Safari.
+
 
 ## ✨ Features
 
